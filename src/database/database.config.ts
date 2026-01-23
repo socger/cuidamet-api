@@ -5,6 +5,11 @@ import { RefreshToken } from '../entities/refresh-token.entity';
 import { PasswordHistory } from '../entities/password-history.entity';
 import { VerificationToken } from '../entities/verification-token.entity';
 import { LoginAttempt } from '../entities/login-attempt.entity';
+import { ClientProfile } from '../entities/client-profile.entity';
+import { ProviderProfile } from '../entities/provider-profile.entity';
+import { ServiceConfig } from '../entities/service-config.entity';
+import { Certificate } from '../entities/certificate.entity';
+import { ServiceVariation } from '../entities/service-variation.entity';
 
 export const databaseConfig = (): TypeOrmModuleOptions => ({
   type: 'mysql',
@@ -13,7 +18,19 @@ export const databaseConfig = (): TypeOrmModuleOptions => ({
   username: process.env.DB_USERNAME || 'socger',
   password: process.env.DB_PASSWORD || 'dcb4f2e8106a0ef44c3f530d3ae3f9fd',
   database: process.env.DB_DATABASE || 'socgerfleet',
-  entities: [User, Role, RefreshToken, PasswordHistory, VerificationToken, LoginAttempt],
+  entities: [
+    User, 
+    Role, 
+    RefreshToken, 
+    PasswordHistory, 
+    VerificationToken, 
+    LoginAttempt,
+    ClientProfile,
+    ProviderProfile,
+    ServiceConfig,
+    Certificate,
+    ServiceVariation
+  ],
   migrations: ['dist/database/migrations/**/*.js'],
   synchronize: false, // IMPORTANTE: false cuando usamos migraciones
   logging: process.env.NODE_ENV === 'development',
