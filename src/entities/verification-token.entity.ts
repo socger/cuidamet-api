@@ -1,9 +1,4 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { BaseEntity } from './base.entity';
 
@@ -14,7 +9,6 @@ export enum TokenType {
 
 @Entity('verification_tokens')
 export class VerificationToken extends BaseEntity {
-
   @Column({ name: 'user_id' })
   userId: number;
 

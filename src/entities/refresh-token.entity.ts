@@ -1,15 +1,9 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { BaseEntity } from './base.entity';
 
 @Entity('refresh_tokens')
 export class RefreshToken extends BaseEntity {
-
   @Column({ length: 500 })
   token: string;
 

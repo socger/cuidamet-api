@@ -1,14 +1,9 @@
-import {
-  Entity,
-  Column,
-  ManyToMany,
-} from 'typeorm';
+import { Entity, Column, ManyToMany } from 'typeorm';
 import { User } from './user.entity';
 import { BaseEntity } from './base.entity';
 
 @Entity('roles')
 export class Role extends BaseEntity {
-
   @Column({ unique: true, length: 50 })
   name: string;
 

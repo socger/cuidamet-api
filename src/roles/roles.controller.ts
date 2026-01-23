@@ -203,7 +203,10 @@ export class RolesController {
     status: 400,
     description: 'Nombre de rol ya existe',
   })
-  async create(@Body(ValidationPipe) createRoleDto: CreateRoleDto, @Request() req) {
+  async create(
+    @Body(ValidationPipe) createRoleDto: CreateRoleDto,
+    @Request() req,
+  ) {
     const createdBy = req.user?.userId;
     return {
       message: 'Rol creado exitosamente',
@@ -242,7 +245,8 @@ export class RolesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Eliminar rol (soft delete)',
-    description: 'Elimina un rol del sistema de forma lógica (soft delete). El rol se mantiene en la base de datos pero marcado como eliminado.',
+    description:
+      'Elimina un rol del sistema de forma lógica (soft delete). El rol se mantiene en la base de datos pero marcado como eliminado.',
   })
   @ApiParam({ name: 'id', type: Number, description: 'ID del rol' })
   @ApiResponse({

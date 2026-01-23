@@ -19,14 +19,19 @@ async function bootstrap() {
   const corsOptions: CorsOptions = {
     origin: (origin, callback) => {
       // Permitir peticiones sin origin (como herramientas de testing, Postman, etc.)
-      if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        allowedOrigins.includes('*')
+      ) {
         callback(null, true);
       } else {
         // Rechazar origen no permitido (devuelve 403 en lugar de 500)
         callback(null, false);
       }
     },
-    methods: process.env.CORS_METHODS || 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    methods:
+      process.env.CORS_METHODS || 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true, // Permitir cookies y cabeceras de autenticación
     allowedHeaders: [
       'Content-Type',
@@ -83,8 +88,8 @@ async function bootstrap() {
     .setTitle('SocgerFleet API')
     .setDescription(
       'Sistema avanzado de gestión de usuarios con autenticación JWT y refresh tokens. ' +
-      'API REST moderna con control de acceso basado en roles (RBAC) y funcionalidades de búsqueda y filtrado. ' +
-      '\n\n**Versionado:** Esta API utiliza versionado URI. Todas las rutas están prefijadas con /v1/ (ejemplo: /v1/users, /v1/auth/login).',
+        'API REST moderna con control de acceso basado en roles (RBAC) y funcionalidades de búsqueda y filtrado. ' +
+        '\n\n**Versionado:** Esta API utiliza versionado URI. Todas las rutas están prefijadas con /v1/ (ejemplo: /v1/users, /v1/auth/login).',
     )
     .setVersion('1.0.0')
     .addTag('auth', 'Endpoints de autenticación y gestión de sesiones')
@@ -101,11 +106,7 @@ async function bootstrap() {
       },
       'JWT-auth',
     )
-    .setContact(
-      'Socger',
-      'https://github.com/socger',
-      'socger@gmail.com',
-    )
+    .setContact('Socger', 'https://github.com/socger', 'socger@gmail.com')
     .setLicense('MIT', 'https://opensource.org/licenses/MIT')
     .build();
 
@@ -117,7 +118,11 @@ async function bootstrap() {
   });
 
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`🚀 Application is running on: http://localhost:${process.env.PORT ?? 3000}`);
-  console.log(`📚 Swagger documentation: http://localhost:${process.env.PORT ?? 3000}/api/docs`);
+  console.log(
+    `🚀 Application is running on: http://localhost:${process.env.PORT ?? 3000}`,
+  );
+  console.log(
+    `📚 Swagger documentation: http://localhost:${process.env.PORT ?? 3000}/api/docs`,
+  );
 }
 bootstrap();

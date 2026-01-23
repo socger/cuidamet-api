@@ -9,12 +9,18 @@ export class UserSeeder {
     const roleRepository = AppDataSource.getRepository(Role);
 
     // Buscar roles
-    const adminRole = await roleRepository.findOne({ where: { name: 'admin' } });
-    const moderatorRole = await roleRepository.findOne({ where: { name: 'moderator' } });
+    const adminRole = await roleRepository.findOne({
+      where: { name: 'admin' },
+    });
+    const moderatorRole = await roleRepository.findOne({
+      where: { name: 'moderator' },
+    });
     const userRole = await roleRepository.findOne({ where: { name: 'user' } });
 
     if (!adminRole || !moderatorRole || !userRole) {
-      console.error('❌ Error: Los roles no existen. Ejecuta primero el seeder de roles.');
+      console.error(
+        '❌ Error: Los roles no existen. Ejecuta primero el seeder de roles.',
+      );
       return;
     }
 
@@ -59,7 +65,9 @@ export class UserSeeder {
       if (!existingUser) {
         const user = userRepository.create(userData);
         await userRepository.save(user);
-        console.log(`✅ Usuario creado: ${userData.username} (${userData.email})`);
+        console.log(
+          `✅ Usuario creado: ${userData.username} (${userData.email})`,
+        );
       } else {
         console.log(`ℹ️  Usuario ya existe: ${userData.username}`);
       }

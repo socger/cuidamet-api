@@ -1,7 +1,7 @@
 services:
   mysql:
     image: mysql:8.0.35
-    container_name: socgerfleet_mysql
+    container_name: ${PROJECT_NAME}_mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD_ROOT}
@@ -14,12 +14,12 @@ services:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d
     networks:
-      - socgerfleet_network
+      - api_network
     command: --default-authentication-plugin=mysql_native_password
 
   phpmyadmin:
     image: phpmyadmin:latest
-    container_name: socgerfleet_phpmyadmin
+    container_name: ${PROJECT_NAME}_phpmyadmin
     restart: always
     environment:
       PMA_HOST: mysql
@@ -31,11 +31,11 @@ services:
     depends_on:
       - mysql
     networks:
-      - socgerfleet_network
+      - api_network
 
 volumes:
   mysql_data:
 
 networks:
-  socgerfleet_network:
+  api_network:
     driver: bridge

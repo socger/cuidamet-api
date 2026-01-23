@@ -262,7 +262,8 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Eliminar usuario (soft delete)',
-    description: 'Elimina un usuario del sistema de forma lógica (soft delete). El usuario se mantiene en la base de datos pero marcado como eliminado.',
+    description:
+      'Elimina un usuario del sistema de forma lógica (soft delete). El usuario se mantiene en la base de datos pero marcado como eliminado.',
   })
   @ApiParam({ name: 'id', type: Number, description: 'ID del usuario' })
   @ApiResponse({

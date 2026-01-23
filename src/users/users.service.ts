@@ -202,7 +202,10 @@ export class UsersService {
     });
   }
 
-  async create(createUserDto: CreateUserDto, createdBy?: number): Promise<User> {
+  async create(
+    createUserDto: CreateUserDto,
+    createdBy?: number,
+  ): Promise<User> {
     // VALIDAR DUPLICADOS ANTES DE CREAR
     const existingEmail = await this.userRepository.findOne({
       where: { email: createUserDto.email },
@@ -254,7 +257,11 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto, updatedBy?: number): Promise<User> {
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+    updatedBy?: number,
+  ): Promise<User> {
     const user = await this.findOne(id);
 
     // VALIDAR DUPLICADOS SI SE CAMBIA EMAIL O USERNAME
@@ -305,12 +312,12 @@ export class UsersService {
 
   async remove(id: number, deletedBy?: number): Promise<void> {
     const user = await this.findOne(id);
-    
+
     // Soft delete con información de auditoría
     if (deletedBy) {
       user.deletedBy = deletedBy;
     }
-    
+
     await this.userRepository.softRemove(user);
   }
 

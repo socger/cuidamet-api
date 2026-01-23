@@ -1,16 +1,10 @@
-import {
-  Entity,
-  Column,
-  ManyToMany,
-  JoinTable,
-} from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
 import { Role } from './role.entity';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from './base.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
-
   @Column({ unique: true, length: 50 })
   username: string;
 

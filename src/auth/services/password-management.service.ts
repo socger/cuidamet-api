@@ -218,10 +218,7 @@ export class PasswordManagementService {
     );
 
     // Validar historial de contraseñas
-    await this.validatePasswordHistory(
-      verificationToken.userId,
-      newPassword,
-    );
+    await this.validatePasswordHistory(verificationToken.userId, newPassword);
 
     // Hashear nueva contraseña
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -291,13 +288,13 @@ export class PasswordManagementService {
     await this.savePasswordHistory(userId, hashedPassword);
 
     // Actualizar contraseña
-    await this.userRepository.update({ id: userId }, { password: hashedPassword });
+    await this.userRepository.update(
+      { id: userId },
+      { password: hashedPassword },
+    );
 
     // Enviar email de confirmación
-    await this.emailService.sendPasswordChangedEmail(
-      user.email,
-      user.username,
-    );
+    await this.emailService.sendPasswordChangedEmail(user.email, user.username);
   }
 
   /**

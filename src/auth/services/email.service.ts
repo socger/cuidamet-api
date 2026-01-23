@@ -146,7 +146,9 @@ export class EmailService {
         `,
       });
 
-      this.logger.log(`Email de confirmación de cambio de contraseña enviado a ${email}`);
+      this.logger.log(
+        `Email de confirmación de cambio de contraseña enviado a ${email}`,
+      );
     } catch (error) {
       this.logger.error(
         `Error enviando email de confirmación a ${email}:`,

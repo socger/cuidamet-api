@@ -8,8 +8,7 @@ export class RoleSeeder {
     const roles = [
       {
         name: 'admin',
-        description:
-          'Administrador con acceso completo al sistema',
+        description: 'Administrador con acceso completo al sistema',
       },
       {
         name: 'moderator',

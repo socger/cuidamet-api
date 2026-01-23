@@ -220,7 +220,10 @@ export class RolesService {
     });
   }
 
-  async create(createRoleDto: CreateRoleDto, createdBy?: number): Promise<Role> {
+  async create(
+    createRoleDto: CreateRoleDto,
+    createdBy?: number,
+  ): Promise<Role> {
     const existingRole = await this.findByName(createRoleDto.name);
     if (existingRole) {
       throw new ConflictException(
@@ -235,7 +238,11 @@ export class RolesService {
     return this.roleRepository.save(role);
   }
 
-  async update(id: number, updateRoleDto: UpdateRoleDto, updatedBy?: number): Promise<Role> {
+  async update(
+    id: number,
+    updateRoleDto: UpdateRoleDto,
+    updatedBy?: number,
+  ): Promise<Role> {
     const role = await this.findOne(id);
 
     if (updateRoleDto.name && updateRoleDto.name !== role.name) {
@@ -256,12 +263,12 @@ export class RolesService {
 
   async remove(id: number, deletedBy?: number): Promise<void> {
     const role = await this.findOne(id);
-    
+
     // Soft delete con información de auditoría
     if (deletedBy) {
       role.deletedBy = deletedBy;
     }
-    
+
     await this.roleRepository.softRemove(role);
   }
 

@@ -18,7 +18,6 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
-  ApiBody,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
@@ -30,7 +29,6 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { VerifyEmailDto } from './dto/verify-email.dto';
 
 // Interfaz para el request con usuario autenticado
 interface AuthenticatedRequest extends Request {
@@ -84,7 +82,8 @@ export class AuthController {
     schema: {
       example: {
         statusCode: 429,
-        message: 'Demasiados intentos de login desde esta IP. Bloqueado por 5 minutos.',
+        message:
+          'Demasiados intentos de login desde esta IP. Bloqueado por 5 minutos.',
         blockedUntil: '2026-01-19T10:35:00.000Z',
         remainingTime: '5 minutos',
       },
@@ -226,8 +225,7 @@ export class AuthController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'Obtener perfil del usuario',
-    description:
-      'Obtener información del usuario autenticado actualmente.',
+    description: 'Obtener información del usuario autenticado actualmente.',
   })
   @ApiResponse({
     status: 200,

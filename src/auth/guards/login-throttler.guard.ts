@@ -11,7 +11,7 @@ import { LoginAttempt } from '../../entities/login-attempt.entity';
 
 /**
  * Guard que implementa throttling avanzado para el endpoint de login
- * 
+ *
  * Reglas implementadas:
  * - Máximo 5 intentos fallidos por IP en 15 minutos
  * - Máximo 3 intentos fallidos por username/email en 15 minutos
@@ -24,7 +24,7 @@ export class LoginThrottlerGuard implements CanActivate {
   private readonly MAX_ATTEMPTS_BY_IP = 5;
   private readonly MAX_ATTEMPTS_BY_IDENTIFIER = 3;
   private readonly WINDOW_MS = 15 * 60 * 1000; // 15 minutos
-  
+
   // Bloqueos progresivos en minutos
   private readonly BLOCK_DURATIONS = [5, 15, 30, 60, 1440]; // última es 24 horas
 
@@ -59,12 +59,14 @@ export class LoginThrottlerGuard implements CanActivate {
       ipAddress,
       null,
     );
-    console.log(`[LoginThrottler] Intentos por IP: ${recentAttemptsByIp}/${this.MAX_ATTEMPTS_BY_IP}`);
-    
+    console.log(
+      `[LoginThrottler] Intentos por IP: ${recentAttemptsByIp}/${this.MAX_ATTEMPTS_BY_IP}`,
+    );
+
     if (recentAttemptsByIp >= this.MAX_ATTEMPTS_BY_IP) {
       const blockDuration = this.calculateBlockDuration(recentAttemptsByIp);
       await this.createBlock(ipAddress, identifier, blockDuration);
-      
+
       throw new HttpException(
         {
           statusCode: HttpStatus.TOO_MANY_REQUESTS,
@@ -83,9 +85,11 @@ export class LoginThrottlerGuard implements CanActivate {
         identifier,
       );
       if (recentAttemptsByIdentifier >= this.MAX_ATTEMPTS_BY_IDENTIFIER) {
-        const blockDuration = this.calculateBlockDuration(recentAttemptsByIdentifier);
+        const blockDuration = this.calculateBlockDuration(
+          recentAttemptsByIdentifier,
+        );
         await this.createBlock(ipAddress, identifier, blockDuration);
-        
+
         throw new HttpException(
           {
             statusCode: HttpStatus.TOO_MANY_REQUESTS,
@@ -162,7 +166,7 @@ export class LoginThrottlerGuard implements CanActivate {
     identifier: string | null,
   ): Promise<number> {
     const windowStart = new Date(Date.now() - this.WINDOW_MS);
-    
+
     const query = this.loginAttemptRepository
       .createQueryBuilder('attempt')
       .where('attempt.isSuccessful = :isSuccessful', { isSuccessful: 0 })

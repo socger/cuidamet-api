@@ -15,9 +15,9 @@
 ## ⚡ Inicio Rápido
 
 ```bash
-# 1. Clonar e instalar
+# 1. Clonar e instalar (con versiones exactas)
 git clone <tu-repositorio>
-cd socgerfleet && npm install
+cd socgerfleet && npm ci
 
 # 2. Configurar
 cp .env.example .env
@@ -37,6 +37,8 @@ npm run start:dev
 
 # 7. Abrir Swagger: http://localhost:3000/api/docs
 ```
+
+> **💡 Tip**: Usa `npm ci` en lugar de `npm install` para instalación reproducible con versiones exactas.
 
 **Pruebas de Seguridad:**
 ```bash
@@ -160,9 +162,41 @@ cd socgerfleet
 ```
 
 ### **2. Instalar dependencias**
+
+#### 🏠 **Para Desarrollo (instalación limpia con versiones exactas)**
 ```bash
-npm install
+npm ci
 ```
+
+Este comando:
+- ✅ Instala **versiones exactas** de `package-lock.json`
+- ✅ Garantiza que todos los desarrolladores tengan las mismas versiones
+- ✅ Es más rápido que `npm install`
+- ✅ Elimina `node_modules` antes de instalar (instalación limpia)
+
+#### 🔧 **Para agregar nuevas dependencias (solo cuando sea necesario)**
+```bash
+# Agregar una nueva dependencia
+npm install nombre-paquete
+
+# Actualizar dependencias existentes (dentro de rangos permitidos)
+npm update
+```
+
+#### 🚀 **Para Producción**
+```bash
+npm ci --only=production
+```
+
+Este comando:
+- ✅ Instala solo dependencias de producción (omite `devDependencies`)
+- ✅ Reduce el tamaño de `node_modules` significativamente
+- ✅ Más rápido y seguro para deployments
+
+> **⚠️ Importante**: 
+> - Usa `npm ci` en CI/CD, servidores y cuando clones el repositorio
+> - Usa `npm install` **solo** cuando agregues/actualices paquetes
+> - Siempre commitea `package-lock.json` al repositorio Git
 
 ### **3. Configurar variables de entorno**
 ```bash

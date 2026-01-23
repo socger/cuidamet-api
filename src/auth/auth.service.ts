@@ -53,7 +53,7 @@ export class AuthService {
     const user = await this.usersService.findByEmail(email);
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const { password, ...result } = user;
+      const { password: _password, ...result } = user;
       return result;
     }
     return null;
@@ -79,7 +79,7 @@ export class AuthService {
     ipAddress?: string,
   ): Promise<AuthResponse> {
     const identifier = loginDto.email;
-    
+
     try {
       const user = await this.validateUser(loginDto.email, loginDto.password);
 
@@ -142,7 +142,7 @@ export class AuthService {
       if (error instanceof UnauthorizedException) {
         throw error;
       }
-      
+
       await this.recordLoginAttempt(
         identifier,
         ipAddress,

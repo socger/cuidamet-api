@@ -44,7 +44,12 @@ export class LoginAttempt {
   /**
    * Mensaje de error si el intento falló
    */
-  @Column({ name: 'failure_reason', type: 'varchar', length: 255, nullable: true })
+  @Column({
+    name: 'failure_reason',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
   failureReason: string;
 
   /**

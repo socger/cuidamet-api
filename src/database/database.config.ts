@@ -19,17 +19,17 @@ export const databaseConfig = (): TypeOrmModuleOptions => ({
   password: process.env.DB_PASSWORD || 'dcb4f2e8106a0ef44c3f530d3ae3f9fd',
   database: process.env.DB_DATABASE || 'socgerfleet',
   entities: [
-    User, 
-    Role, 
-    RefreshToken, 
-    PasswordHistory, 
-    VerificationToken, 
+    User,
+    Role,
+    RefreshToken,
+    PasswordHistory,
+    VerificationToken,
     LoginAttempt,
     ClientProfile,
     ProviderProfile,
     ServiceConfig,
     Certificate,
-    ServiceVariation
+    ServiceVariation,
   ],
   migrations: ['dist/database/migrations/**/*.js'],
   synchronize: false, // IMPORTANTE: false cuando usamos migraciones

@@ -1,15 +1,9 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { BaseEntity } from './base.entity';
 
 @Entity('password_history')
 export class PasswordHistory extends BaseEntity {
-
   @Column({ name: 'user_id' })
   userId: number;
 

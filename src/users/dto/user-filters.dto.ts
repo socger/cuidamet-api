@@ -23,7 +23,8 @@ export enum SortOrder {
 
 export class UserFiltersDto {
   @ApiPropertyOptional({
-    description: 'Búsqueda en múltiples campos (username, email, firstName, lastName)',
+    description:
+      'Búsqueda en múltiples campos (username, email, firstName, lastName)',
     example: 'john',
   })
   @IsOptional()
