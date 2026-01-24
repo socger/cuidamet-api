@@ -69,6 +69,8 @@ npm run start:dev
 - [🤝 Contribuir](#-contribuir)
 - [📝 Licencia](#-licencia)
 
+> 💡 **Recordatorio para Desarrollo:** Antes de crear nuevos DTOs o filtros, lee [DEVELOPMENT-NOTES.md](DEVELOPMENT-NOTES.md) - especialmente la sección sobre filtros booleanos.
+
 ---
 
 ## 📋 Descripción
@@ -1130,7 +1132,53 @@ export class MiRecursoController {
 }
 ```
 
-### 📦 **5. Modificar Entidad Existente**
+### � **5. CRÍTICO: Filtros Booleanos en DTOs**
+
+**⚠️ ESTE ES UN PROBLEMA COMÚN - LEER ANTES DE CREAR FILTROS**
+
+Cuando creas DTOs de filtros con campos booleanos, **DEBES seguir este patrón obligatorio**:
+
+**❌ INCORRECTO:**
+```typescript
+@Type(() => Boolean)  // ← NUNCA USAR ESTO
+@IsBoolean()
+isActive?: boolean;
+```
+**Problema:** `Boolean("false")` = `true` - El filtro falla con false
+
+**✅ CORRECTO:**
+```typescript
+import { Transform } from 'class-transformer';  // ← IMPORTANTE
+
+@IsBoolean()
+@Transform(({ value }) => {
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  return value;
+})
+isActive?: boolean;
+```
+
+**En el servicio (método findAll o similar):**
+```typescript
+if (typeof filters.isActive === 'boolean') {
+  // CRÍTICO: Convertir a 0/1 para MySQL TINYINT(1)
+  queryBuilder.andWhere('entidad.isActive = :isActive', {
+    isActive: filters.isActive ? 1 : 0,  // ← OBLIGATORIO
+  });
+}
+```
+
+**Por qué es importante:**
+- Query parameters HTTP llegan como strings
+- MySQL almacena booleanos como TINYINT(1): `0` o `1`
+- Sin esta conversión: `?isActive=false` devuelve 0 resultados
+
+**Referencia completa:** Ver `resources/documents/AI conversations/.../035-BOOLEAN-FILTERS-FIX.md`
+
+---
+
+### 📦 **6. Modificar Entidad Existente**
 
 **Proceso:**
 
@@ -1153,7 +1201,7 @@ npm run migration:show
 - ⚠️ Crear nueva versión de API (v2)
 - ⚠️ Seguir guía: PASO-A-PASO-Crear-Nueva-Version-API.md
 
-### 📋 **6. Actualizar CHANGELOG.md**
+### 📋 **7. Actualizar CHANGELOG.md**
 
 **OBLIGATORIO después de cada cambio significativo:**
 
@@ -1175,7 +1223,7 @@ npm run migration:show
 
 **Formato:** Sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/)
 
-### 🧪 **7. Testing**
+### 🧪 **8. Testing**
 
 **Antes de considerar completo:**
 
@@ -1193,7 +1241,7 @@ npm run test:e2e
 # Verificar Swagger
 ```
 
-### 📚 **8. Documentación de Referencia**
+### 📚 **9. Documentación de Referencia**
 
 **Lee estos documentos antes de cambios mayores:**
 
@@ -1202,7 +1250,7 @@ npm run test:e2e
 - `resources/documents/AI conversations/PASO-A-PASO-Crear-Nueva-Version-API.md`
 - `CHANGELOG.md` - Ver historial de cambios
 
-### ⚡ **9. Comandos Rápidos de Referencia**
+### ⚡ **10. Comandos Rápidos de Referencia**
 
 ```bash
 # Base de datos
@@ -1228,7 +1276,7 @@ git add .                               # Agregar todos
 git commit -m "feat: descripción"      # Commit
 ```
 
-### ✅ **10. Checklist Final (AI)**
+### ✅ **11. Checklist Final (AI)**
 
 Antes de reportar cambio como completo:
 

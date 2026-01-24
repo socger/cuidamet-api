@@ -1,5 +1,33 @@
 # SocgerFleet - Agent Documentation
 
+## ⚠️ INSTRUCCIÓN CRÍTICA PARA ASISTENTES DE IA
+
+**ANTES DE HACER CUALQUIER CAMBIO, LEE ESTOS DOCUMENTOS:**
+
+### 📄 Documentación en Raíz del Proyecto (OBLIGATORIA)
+1. **[AGENTS.md](AGENTS.md)** - Este archivo - Documentación principal
+2. **[DEVELOPMENT-NOTES.md](DEVELOPMENT-NOTES.md)** - Recordatorios críticos de desarrollo
+3. **[README.md](README.md)** - Especialmente sección "🤖 Guía para IA"
+4. **[CHANGELOG.md](CHANGELOG.md)** - Historial de cambios y versiones
+
+### 📚 Documentación en `resources/documents/AI conversations/` (OBLIGATORIA)
+**Lee todos los archivos en esta carpeta y sus subcarpetas** antes de hacer cambios mayores:
+- Archivos con formato `PASO-A-PASO-*.md` - Guías de procesos específicos
+- Archivos con formato `GUIA-*.md` - Documentación general
+- Archivo `035-BOOLEAN-FILTERS-FIX...md` - **CRÍTICO** si creas DTOs con filtros
+
+### 🔴 CRÍTICO: Problema Frecuente - Filtros Booleanos
+**Este es el error más común en DTOs de filtros:**
+- ❌ INCORRECTO: `?isActive=false` → Devuelve 0 resultados
+- ✅ CORRECTO: Usar `@Transform` con conversión explícita
+
+**Ubica rápidamente cómo hacerlo:**
+- DEVELOPMENT-NOTES.md (tabla de contents)
+- AGENTS.md (buscar "CRÍTICO: Manejo de Campos Booleanos")
+- README.md (sección 5 de "Guía para IA")
+
+---
+
 ## 📋 Proyecto Overview
 
 **SocgerFleet** es una aplicación backend robusta desarrollada con **NestJS** y **TypeScript** que implementa un sistema completo de gestión de usuarios, roles y autenticación con refresh tokens. El proyecto está diseñado para ser una base sólida para aplicaciones empresariales que requieren control de acceso granular y gestión de usuarios.
@@ -406,6 +434,81 @@ POST /users/{userId}/roles/{roleId}
 - Índices optimizados en campos únicos
 - Relaciones con CASCADE para integridad
 - Timestamps automáticos (createdAt, updatedAt)
+
+---
+
+## ⚠️ Consideraciones Importantes para Desarrollo
+
+### 🔴 CRÍTICO: Manejo de Campos Booleanos en Filtros
+
+**Cuando crees nuevos DTOs de filtros con campos booleanos, SIEMPRE sigue este patrón:**
+
+#### Problema
+Los query parameters HTTP llegan como **strings**, no como booleanos. Esto causa:
+- `?isActive=false` se convierte a `Boolean("false")` = `true` ❌
+- `?isActive=true` se convierte a `Boolean("true")` = `true` ✅ (parcialmente correcto)
+- MySQL almacena booleanos como TINYINT(1): `0` o `1`
+- Comparaciones SQL incorrectas: `WHERE is_active = true` (no coincide con 0 ni 1)
+
+#### Solución - Patrón a Seguir
+
+**En el DTO de filtros:**
+```typescript
+import { Type, Transform } from 'class-transformer';  // ← Importar Transform
+import { IsBoolean, IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+
+export class MiFilterDto {
+  @ApiPropertyOptional({
+    description: 'Descripción del campo booleano',
+    example: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    // ← IMPORTANTE: @Transform SIEMPRE después de @IsBoolean()
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;  // Devuelve valor original para validación
+  })
+  miCampoBooleano?: boolean;
+}
+```
+
+**En el servicio (método que usa la query):**
+```typescript
+if (typeof filters.miCampoBooleano === 'boolean') {
+  // Convertir booleano a número para MySQL (0 o 1)
+  queryBuilder.andWhere('entidad.miCampoBooleano = :miCampoBooleano', {
+    miCampoBooleano: filters.miCampoBooleano ? 1 : 0,  // ← CRÍTICO
+  });
+}
+```
+
+#### Checklist para Code Review
+- [ ] ¿El campo está en un DTO de filtros (no en create/update)?
+- [ ] ¿Se usa como query parameter en un GET?
+- [ ] ¿Importaste `Transform` de `class-transformer`?
+- [ ] ¿El orden de decoradores es: `@IsBoolean()` → `@Transform(...)`?
+- [ ] ¿Convertiste a 0/1 en la query SQL?
+- [ ] ¿Probaste con `true` y `false`?
+- [ ] ¿Verificaste los logs SQL para confirmar `PARAMETERS: [1]` o `[0]`?
+
+#### Campos Booleanos Existentes que Requieren Este Patrón
+
+Si creas endpoints GET con filtros, aplica este patrón a:
+- `User.isActive` - ✅ Ya implementado
+- `User.emailVerified` - Si se agrega filtro
+- `RefreshToken.isRevoked` - Si se crea endpoint GET
+- `LoginAttempt.isSuccessful` - Si se crea consulta
+- `VerificationToken.isUsed` - Si se crea endpoint de administración
+
+#### Referencias
+- **Documentación completa**: [BOOLEAN-FILTERS-FIX.md](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/035%20-%20BOOLEAN-FILTERS-FIX%20-%20Cambios%20necesarios%20para%20poder%20filtrar%20booleanos%20en%20las%20sql%20con%20type%20ORM.md)
+- **NestJS Serialization**: https://docs.nestjs.com/techniques/serialization
+- **Class Transformer**: https://github.com/typestack/class-transformer
+
+---
 
 ## 🚀 Próximas Mejoras Sugeridas
 

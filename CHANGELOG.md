@@ -7,6 +7,15 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Fixed
+- **Boolean Filters Fix** - Corrección crítica en filtros con campos booleanos en query parameters
+  - **Problema**: Los filtros `?isActive=false` no devolvían resultados, `?isActive=true` era inconsistente
+  - **Causa**: Conversión incorrecta de string a booleano (`Boolean("false")` = `true`)
+  - **Solución**: Usar `@Transform` en DTOs de filtros + conversión a 0/1 en queries SQL
+  - **Archivos afectados**: `src/users/dto/user-filters.dto.ts`, `src/users/users.service.ts`
+  - **Documentación**: [BOOLEAN-FILTERS-FIX.md](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/035%20-%20BOOLEAN-FILTERS-FIX%20-%20Cambios%20necesarios%20para%20poder%20filtrar%20booleanos%20en%20las%20sql%20con%20type%20ORM.md)
+  - **Patrón implementado**: Template reutilizable para futuros campos booleanos en filtros
+
 ### Planeado
 - Endpoint GraphQL para consultas flexibles
 - Sistema de webhooks para integraciones

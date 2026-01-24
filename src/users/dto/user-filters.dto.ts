@@ -21,6 +21,15 @@ export enum SortOrder {
   DESC = 'DESC',
 }
 
+/**
+ * DTO para filtros de búsqueda en usuarios.
+ * 
+ * ⚠️ CRÍTICO: Campos booleanos como `isActive` requieren @Transform especial
+ * para convertir strings a booleanos. Ver método applyUserFilters en users.service.ts
+ * que convierte a 0/1 para MySQL TINYINT(1).
+ * 
+ * Documentación: resources/documents/AI conversations/.../035-BOOLEAN-FILTERS-FIX.md
+ */
 export class UserFiltersDto {
   @ApiPropertyOptional({
     description:

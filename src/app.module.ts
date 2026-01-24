@@ -1,3 +1,25 @@
+/**
+ * ⚠️ INSTRUCCIÓN CRÍTICA PARA ASISTENTES DE IA
+ * 
+ * DOCUMENTACIÓN OBLIGATORIA A LEER ANTES DE CUALQUIER CAMBIO:
+ * 
+ * 📋 RAÍZ DEL PROYECTO (*.md):
+ *    - AGENTS.md (documentación principal)
+ *    - DEVELOPMENT-NOTES.md (recordatorios de desarrollo)
+ *    - CHANGELOG.md (historial de cambios)
+ *    - README.md (especialmente "🤖 Guía para IA")
+ * 
+ * 📚 DOCUMENTACIÓN EN resources/documents/AI conversations/:
+ *    - Todas las carpetas y subcarpetas contienen guías importantes
+ *    - Especialmente: 035-BOOLEAN-FILTERS-FIX...md
+ *    - Buscar: PASO-A-PASO, GUIA-, o archivos relevantes al cambio
+ * 
+ * 🔴 PROBLEMA CRÍTICO A RECORDAR:
+ *    Filtros booleanos en query parameters NO funcionan sin @Transform
+ *    Esto causa: ?isActive=false devuelve 0 resultados
+ *    Solución: Ver AGENTS.md o DEVELOPMENT-NOTES.md
+ */
+
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';

@@ -1,3 +1,23 @@
+/**
+ * ⚠️ IMPORTANTE PARA ASISTENTES DE IA
+ * 
+ * Antes de hacer cambios en este proyecto, LEE ESTOS DOCUMENTOS:
+ * 
+ * 1. AGENTS.md - Documentación principal del proyecto
+ * 2. DEVELOPMENT-NOTES.md - Recordatorios críticos de desarrollo
+ * 3. CHANGELOG.md - Historial y cambios recientes
+ * 4. README.md - Especialmente sección "🤖 Guía para IA"
+ * 
+ * ⚠️ CRÍTICO - FILTROS BOOLEANOS:
+ * Si vas a crear DTOs con campos booleanos para filtros (GET):
+ * - NO uses: @Type(() => Boolean)
+ * - USA: @Transform con conversión explícita de strings
+ * - Ver: DEVELOPMENT-NOTES.md o AGENTS.md sección "Consideraciones Importantes"
+ * 
+ * Documentación completa en resources/documents/AI conversations/
+ * (incluyendo subcarpetas)
+ */
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';

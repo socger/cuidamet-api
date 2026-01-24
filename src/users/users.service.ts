@@ -112,7 +112,9 @@ export class UsersService {
 
     // Filtro por estado activo/inactivo
     if (typeof filters.isActive === 'boolean') {
-      // Convertir booleano a número para MySQL (0 o 1)
+      // ⚠️ IMPORTANTE: Convertir booleano a número para MySQL TINYINT(1)
+      // Sin esto, la query SQL genera WHERE is_active = true/false en lugar de WHERE is_active = 0/1
+      // Ver documentación: resources/documents/AI conversations/.../035-BOOLEAN-FILTERS-FIX.md
       queryBuilder.andWhere('user.isActive = :isActive', {
         isActive: filters.isActive ? 1 : 0,
       });
