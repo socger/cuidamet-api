@@ -18,6 +18,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiHeader,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
@@ -57,6 +58,11 @@ export class AuthController {
       'Autenticar usuario con email y contraseña. Retorna access token (15 min) y refresh token (7 días). ' +
       'Sistema de throttling avanzado: máximo 5 intentos por IP y 3 por usuario en 15 minutos. ' +
       'Bloqueos progresivos: 5min, 15min, 30min, 1h, 24h.',
+  })
+  @ApiHeader({
+    name: 'user-agent',
+    required: false,
+    description: 'User agent del navegador (opcional, se envía automáticamente)',
   })
   @ApiResponse({
     status: 200,

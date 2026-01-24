@@ -5,7 +5,7 @@ import {
   IsEnum,
   MinLength,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum UserSortBy {
@@ -69,8 +69,12 @@ export class UserFiltersDto {
     example: true,
   })
   @IsOptional()
-  @Type(() => Boolean)
   @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
   isActive?: boolean;
 
   @ApiPropertyOptional({

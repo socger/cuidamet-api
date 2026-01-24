@@ -112,8 +112,9 @@ export class UsersService {
 
     // Filtro por estado activo/inactivo
     if (typeof filters.isActive === 'boolean') {
+      // Convertir booleano a número para MySQL (0 o 1)
       queryBuilder.andWhere('user.isActive = :isActive', {
-        isActive: filters.isActive,
+        isActive: filters.isActive ? 1 : 0,
       });
     }
 
