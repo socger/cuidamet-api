@@ -71,6 +71,9 @@
             Ayudame a realizar estos pasos.
 
 
+* Hay que comprobar si tras los cambios hechos en el repositorio api plantilla, funcionan todos los endPoints en swagger.
+
+
 * NO ESTAN TERMINADOS TODOS LOS CONTROLLER, DTO, etc ... solo se han creado los que tienen que ver con clientProfiles ...
         Bueno estos son los pasos que hasta ahora llevamos hechos, los que me sugeriste:
 
