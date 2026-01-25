@@ -30,6 +30,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { UserFiltersDto } from './dto/user-filters.dto';
+import { UserProfilesResponseDto } from './dto/user-profiles-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('users')
@@ -200,6 +201,59 @@ export class UsersController {
     return {
       message: 'Usuario obtenido exitosamente',
       data: await this.usersService.findOne(id),
+    };
+  }
+
+  @Get(':id/profiles')
+  @ApiOperation({
+    summary: 'Obtener perfiles del usuario',
+    description:
+      'Obtiene los perfiles de cliente y/o proveedor asociados a un usuario. ' +
+      'Un usuario puede tener perfil de cliente, proveedor, ambos o ninguno.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'ID del usuario',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfiles obtenidos exitosamente',
+    type: UserProfilesResponseDto,
+    schema: {
+      example: {
+        message: 'Perfiles obtenidos exitosamente',
+        data: {
+          clientProfile: {
+            id: 1,
+            userId: 1,
+            address: 'Calle Ejemplo 123',
+            city: 'Madrid',
+            postalCode: '28001',
+            phoneNumber: '+34600000000',
+            emergencyContactName: 'Juan Pérez',
+            emergencyContactPhone: '+34600000001',
+            preferredLanguage: 'es',
+            notifications: true,
+            createdAt: '2026-01-25T10:00:00.000Z',
+            updatedAt: '2026-01-25T10:00:00.000Z',
+          },
+          providerProfile: null,
+          hasProfiles: true,
+          profileType: 'client',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuario no encontrado',
+  })
+  async getUserProfiles(@Param('id', ParseIntPipe) id: number) {
+    return {
+      message: 'Perfiles obtenidos exitosamente',
+      data: await this.usersService.getUserProfiles(id),
     };
   }
 

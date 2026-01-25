@@ -1,0 +1,166 @@
+### ==============================================
+### TESTS DE RELACIONES BIDIRECCIONALES
+### User ↔ ClientProfile ↔ ProviderProfile
+### ==============================================
+
+### Variables globales (ajusta estos valores)
+@baseUrl = http://localhost:3000/v1
+@accessToken = TU_ACCESS_TOKEN_AQUI
+
+### ==============================================
+### 1. NUEVO ENDPOINT - Obtener perfiles de usuario
+### ==============================================
+
+### 1.1. Obtener perfiles de un usuario (ID 1)
+# Descripción: Obtiene clientProfile y providerProfile de un usuario
+GET {{baseUrl}}/users/1/profiles
+Content-Type: application/json
+
+### 1.2. Obtener perfiles de otro usuario (ID 2)
+GET {{baseUrl}}/users/2/profiles
+Content-Type: application/json
+
+### 1.3. Probar con usuario inexistente (debería dar 404)
+GET {{baseUrl}}/users/99999/profiles
+Content-Type: application/json
+
+### ==============================================
+### 2. VERIFICAR RELACIONES INVERSAS
+### ==============================================
+
+### 2.1. Crear perfil de cliente para usuario 1
+POST {{baseUrl}}/client-profiles
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "userId": 1,
+  "address": "Calle Test 123",
+  "city": "Madrid",
+  "postalCode": "28001",
+  "phoneNumber": "+34600000000",
+  "emergencyContactName": "Juan Pérez",
+  "emergencyContactPhone": "+34600000001",
+  "preferredLanguage": "es",
+  "notifications": true
+}
+
+### 2.2. Verificar que ahora el usuario tiene clientProfile
+GET {{baseUrl}}/users/1/profiles
+Content-Type: application/json
+
+### 2.3. Crear perfil de proveedor para el mismo usuario
+POST {{baseUrl}}/provider-profiles
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "userId": 1,
+  "businessName": "Mi Negocio SL",
+  "businessType": "company",
+  "taxId": "B12345678",
+  "address": "Calle Negocio 456",
+  "city": "Barcelona",
+  "postalCode": "08001",
+  "phoneNumber": "+34600000002",
+  "website": "https://minegocio.com",
+  "description": "Proveedor de servicios profesionales"
+}
+
+### 2.4. Verificar que el usuario ahora tiene AMBOS perfiles
+GET {{baseUrl}}/users/1/profiles
+Content-Type: application/json
+# Respuesta esperada:
+# {
+#   "clientProfile": {...},
+#   "providerProfile": {...},
+#   "hasProfiles": true,
+#   "profileType": "both"
+# }
+
+### ==============================================
+### 3. CASOS DE USO PRÁCTICOS
+### ==============================================
+
+### 3.1. Verificar tipo de perfil de usuario
+# Útil para frontend: ¿Este usuario es cliente, proveedor o ambos?
+GET {{baseUrl}}/users/1/profiles
+Content-Type: application/json
+
+### 3.2. Obtener toda la información del usuario + perfiles
+# Combina datos de usuario con sus perfiles
+GET {{baseUrl}}/users/1
+Content-Type: application/json
+
+# Luego obtener perfiles
+GET {{baseUrl}}/users/1/profiles
+Content-Type: application/json
+
+### ==============================================
+### NOTAS TÉCNICAS
+### ==============================================
+
+# 📝 IMPLEMENTACIÓN:
+# - Endpoint público: GET /v1/users/:id/profiles
+# - No requiere autenticación (es público)
+# - Retorna clientProfile y providerProfile si existen
+# - Incluye metadata útil: hasProfiles, profileType
+
+# 📊 RESPUESTAS POSIBLES:
+# 1. Usuario sin perfiles:
+#    { clientProfile: null, providerProfile: null, hasProfiles: false, profileType: "none" }
+#
+# 2. Usuario solo con perfil de cliente:
+#    { clientProfile: {...}, providerProfile: null, hasProfiles: true, profileType: "client" }
+#
+# 3. Usuario solo con perfil de proveedor:
+#    { clientProfile: null, providerProfile: {...}, hasProfiles: true, profileType: "provider" }
+#
+# 4. Usuario con ambos perfiles:
+#    { clientProfile: {...}, providerProfile: {...}, hasProfiles: true, profileType: "both" }
+
+# 🎯 BENEFICIOS PARA FRONTEND:
+# - Una sola llamada para obtener todos los perfiles
+# - Campo profileType indica rápidamente qué UI mostrar
+# - Campo hasProfiles permite mostrar mensaje si usuario no tiene perfiles
+# - Documentado completamente en Swagger
+
+# 🔗 SWAGGER:
+# Accede a http://localhost:3000/api/docs
+# Busca el endpoint: GET /v1/users/{id}/profiles
+# Puedes probarlo directamente desde ahí
+
+# ⚡ RENDIMIENTO:
+# - TypeORM carga las relaciones en una sola query (LEFT JOIN)
+# - No se cargan datos innecesarios (solo los campos de los perfiles)
+# - Cacheable en frontend (el profileType no cambia frecuentemente)
+
+#   const user = await userRepo.findOne({ where: { id } });
+#   const clientProfile = await clientProfileRepo.findOne({ where: { userId: user.id } });
+# Ahora:
+#   const user = await userRepo.findOne({ 
+#     where: { id }, 
+#     relations: ['clientProfile'] 
+#   });
+
+### 3. Queries TypeORM más expresivas
+# await userRepo.find({ 
+#   relations: ['roles', 'clientProfile', 'providerProfile'],
+#   where: { isActive: true }
+# });
+
+### ==============================================
+### VERIFICACIÓN DE NO AFECTACIÓN
+### ==============================================
+
+### ✅ Las queries existentes NO se ven afectadas porque:
+# 1. Las relaciones son opcionales (nullable: true)
+# 2. No se cargan automáticamente (lazy loading por defecto)
+# 3. Solo se cargan si se especifican en 'relations'
+# 4. Todos los endpoints actuales siguen funcionando igual
+
+### ENDPOINTS QUE SIGUEN IGUAL:
+# - GET /users → Solo carga 'roles' (no perfiles)
+# - GET /users/:id → Solo carga 'roles' (no perfiles)
+# - GET /client-profiles → Ya cargaba 'user'
+# - GET /provider-profiles → Ya cargaba 'user'

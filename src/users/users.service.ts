@@ -205,6 +205,47 @@ export class UsersService {
     });
   }
 
+  /**
+   * Obtener perfiles de cliente y proveedor de un usuario
+   * @param userId ID del usuario
+   * @returns Objeto con clientProfile y providerProfile (si existen)
+   */
+  async getUserProfiles(userId: number): Promise<{
+    clientProfile: any | null;
+    providerProfile: any | null;
+    hasProfiles: boolean;
+    profileType: 'none' | 'client' | 'provider' | 'both';
+  }> {
+    // Verificar que el usuario existe
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['clientProfile', 'providerProfile'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuario con ID ${userId} no encontrado`);
+    }
+
+    const hasClientProfile = !!user.clientProfile;
+    const hasProviderProfile = !!user.providerProfile;
+
+    let profileType: 'none' | 'client' | 'provider' | 'both' = 'none';
+    if (hasClientProfile && hasProviderProfile) {
+      profileType = 'both';
+    } else if (hasClientProfile) {
+      profileType = 'client';
+    } else if (hasProviderProfile) {
+      profileType = 'provider';
+    }
+
+    return {
+      clientProfile: user.clientProfile || null,
+      providerProfile: user.providerProfile || null,
+      hasProfiles: hasClientProfile || hasProviderProfile,
+      profileType,
+    };
+  }
+
   async create(
     createUserDto: CreateUserDto,
     createdBy?: number,

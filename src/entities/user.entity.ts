@@ -1,5 +1,7 @@
-import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable, OneToOne } from 'typeorm';
 import { Role } from './role.entity';
+import { ClientProfile } from './client-profile.entity';
+import { ProviderProfile } from './provider-profile.entity';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from './base.entity';
 
@@ -40,4 +42,16 @@ export class User extends BaseEntity {
     },
   })
   roles: Role[];
+
+  // Relación bidireccional con ClientProfile (opcional)
+  @OneToOne(() => ClientProfile, (clientProfile) => clientProfile.user, {
+    nullable: true,
+  })
+  clientProfile?: ClientProfile;
+
+  // Relación bidireccional con ProviderProfile (opcional)
+  @OneToOne(() => ProviderProfile, (providerProfile) => providerProfile.user, {
+    nullable: true,
+  })
+  providerProfile?: ProviderProfile;
 }
