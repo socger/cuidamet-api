@@ -18,6 +18,14 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
   - **DTO**: `UserProfilesResponseDto` con metadata útil para frontend
   - **Tests**: Archivo actualizado `user-profiles-relations-tests.http` con casos de prueba
   - **Beneficio**: Una sola llamada API en lugar de múltiples queries para obtener perfiles
+  - **Documentación**: [Feature 001 - Perfiles de Usuario](resources/documents/AI%20conversations/AI%20conversations%20-%20cuidamet-api/001%20-%20Creación%20de%20los%20perfiles%20de%20usuario%20profesionales%20y%20familiares/)
+
+### Changed
+- **Organización de Documentación** - Reestructuración de carpetas para mejor mantenibilidad
+  - Documentación del proyecto actual en: `resources/documents/AI conversations/AI conversations - cuidamet-api/`
+  - Documentación del template base en: `resources/documents/AI conversations/AI conversations - socgerFleet/` (NO modificar)
+  - Organización por features con numeración: `001 - Feature/`, `002 - Feature/`
+  - Archivos numerados secuencialmente dentro de cada feature
 
 ### Fixed
 - **Boolean Filters Fix** - Corrección crítica en filtros con campos booleanos en query parameters

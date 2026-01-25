@@ -902,33 +902,51 @@ docker exec -it socgerfleet_mysql mysql -u socger -p
 - **Validaciones de negocio** (duplicados, relaciones, etc.)
 
 ## 📊 Documentación
-Ten, siempre en cuenta, que en este repositorio tenemos la carpeta "resources/documents/AI conversations" donde se van guardando todas las conversaciones mantenidas con la IA.
+
+### 📁 Estructura de Documentación
+
+Este repositorio mantiene toda la documentación técnica organizada:
+
+**Carpetas principales:**
+- `resources/documents/AI conversations/AI conversations - cuidamet-api/` - **📝 Conversaciones y decisiones de este proyecto** (crea aquí nuevos .md)
+- `resources/documents/AI conversations/AI conversations - socgerFleet/` - Conversaciones del proyecto template (NO modificar)
+
+**⚠️ IMPORTANTE para crear nuevos archivos .md:**
+- ✅ **CREAR EN**: `resources/documents/AI conversations/AI conversations - cuidamet-api/`
+  - Organiza por features en subcarpetas numeradas: `001 - Nombre Feature/`, `002 - Otra Feature/`
+  - Archivos numerados secuencialmente: `001-1-descripcion.md`, `001-2-implementacion.md`
+- ❌ **NO CREAR EN**: `resources/documents/AI conversations/` (raíz)
+- ❌ **NO MODIFICAR**: `resources/documents/AI conversations/AI conversations - socgerFleet/` (template)
 
 ### **📚 Documentación Adicional**
 
 El proyecto incluye documentación detallada para diferentes aspectos:
 
 **Base de Datos:**
-- [Mejoras de Base de Datos](resources/documents/AI%20conversations/Mejoras-Base-Datos.md) - Guía completa de migraciones, seeders y auditoría
-- [Checklist de Implementación](resources/documents/AI%20conversations/CHECKLIST-Implementacion-BD.md) - Pasos para aplicar las mejoras
-- [Resumen de Implementación](resources/documents/AI%20conversations/RESUMEN-Implementacion-Completa.md) - Resumen ejecutivo de cambios
+- [Mejoras de Base de Datos](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/Mejoras-Base-Datos.md) - Guía completa de migraciones, seeders y auditoría
+- [Checklist de Implementación](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/CHECKLIST-Implementacion-BD.md) - Pasos para aplicar las mejoras
+- [Resumen de Implementación](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/009%20-%20RESUMEN-Implementacion-Completa.md) - Resumen ejecutivo de cambios
 
 **Seguridad:**
 - [Guía de CORS](README-CORS.md) - Configuración completa de Cross-Origin Resource Sharing
-- [Implementación de CORS](resources/documents/AI%20conversations/Implementación%20de%20CORS.md) - Documentación técnica detallada
-- [Mejoras de Seguridad - Helmet](resources/documents/AI%20conversations/Mejoras%20de%20seguridad%20para%20API%20-%20Helmet.md) - Implementación de cabeceras HTTP de seguridad
-- [Implementing HELMET for HTTP security headers](resources/documents/AI%20conversations/Implementing%20HELMET%20for%20HTTP%20security%20headers.md) - Documentación técnica de Helmet
-- [Implementación de Rate Limiting](resources/documents/AI%20conversations/Implementación%20de%20Rate%20Limiting.md) - Protección contra ataques de fuerza bruta y abuso
-- [Implementación de Throttling Avanzado en Login](resources/documents/AI%20conversations/Implementación%20de%20Throttling%20Avanzado%20en%20Login.md) - Sistema inteligente de protección en login
+- [Implementación de CORS](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/020%20-%20Implementación%20de%20CORS%20para%20seguridad%20adicional.md) - Documentación técnica detallada
+- [Mejoras de Seguridad - Helmet](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/Mejoras%20de%20seguridad%20para%20API%20-%20Helmet.md) - Implementación de cabeceras HTTP de seguridad
+- [Implementing HELMET for HTTP security headers](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/Implementing%20HELMET%20for%20HTTP%20security%20headers.md) - Documentación técnica de Helmet
+- [Implementación de Rate Limiting](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/Implementación%20de%20Rate%20Limiting.md) - Protección contra ataques de fuerza bruta y abuso
+- [Implementación de Throttling Avanzado en Login](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/Implementación%20de%20Throttling%20Avanzado%20en%20Login.md) - Sistema inteligente de protección en login
 
 **Desarrollo:**
-- [Guía: Crear Nuevas Entidades](resources/documents/AI%20conversations/GUIA-Crear-Nuevas-Entidades.md) - Workflow completo con ejemplos
+- [Guía: Crear Nuevas Entidades](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/GUIA-Crear-Nuevas-Entidades.md) - Workflow completo con ejemplos
+
+**Features de Cuidamet-API:**
+- [001 - Perfiles de Usuario](resources/documents/AI%20conversations/AI%20conversations%20-%20cuidamet-api/001%20-%20Creación%20de%20los%20perfiles%20de%20usuario%20profesionales%20y%20familiares/) - Implementación completa de ClientProfile y ProviderProfile
 
 **Control de Versiones:**
 - [CHANGELOG.md](CHANGELOG.md) - Historial de cambios del proyecto versionado con Semantic Versioning
 
 **Conversaciones con IA:**
-- Todas las conversaciones y decisiones de diseño se documentan en `resources/documents/AI conversations/`
+- **Proyecto actual**: `resources/documents/AI conversations/AI conversations - cuidamet-api/`
+- **Template base**: `resources/documents/AI conversations/AI conversations - socgerFleet/` (NO modificar)
 
 ### **📝 Mantenimiento del Proyecto**
 
@@ -1049,8 +1067,8 @@ export class UsersController {}
 #### **Proceso para crear v2:**
 
 **ANTES DE CODIFICAR:**
-1. Consulta: `resources/documents/AI conversations/PASO-A-PASO-Crear-Nueva-Version-API.md`
-2. Lee: `resources/documents/AI conversations/GUIA-Versionado-API.md`
+1. Consulta: `resources/documents/AI conversations/AI conversations - socgerFleet/PASO-A-PASO-Crear-Nueva-Version-API.md`
+2. Lee: `resources/documents/AI conversations/AI conversations - socgerFleet/GUIA-Versionado-API.md`
 3. Sigue el proceso completo documentado
 
 **Pasos básicos:**
@@ -1174,7 +1192,7 @@ if (typeof filters.isActive === 'boolean') {
 - MySQL almacena booleanos como TINYINT(1): `0` o `1`
 - Sin esta conversión: `?isActive=false` devuelve 0 resultados
 
-**Referencia completa:** Ver `resources/documents/AI conversations/.../035-BOOLEAN-FILTERS-FIX.md`
+**Referencia completa:** Ver `resources/documents/AI conversations/AI conversations - socgerFleet/035 - BOOLEAN-FILTERS-FIX - Cambios necesarios para poder filtrar booleanos en las sql con type ORM.md`
 
 ---
 
@@ -1245,9 +1263,9 @@ npm run test:e2e
 
 **Lee estos documentos antes de cambios mayores:**
 
-- `resources/documents/AI conversations/GUIA-Crear-Nuevas-Entidades.md`
-- `resources/documents/AI conversations/GUIA-Versionado-API.md`
-- `resources/documents/AI conversations/PASO-A-PASO-Crear-Nueva-Version-API.md`
+- `resources/documents/AI conversations/AI conversations - socgerFleet/GUIA-Crear-Nuevas-Entidades.md`
+- `resources/documents/AI conversations/AI conversations - socgerFleet/GUIA-Versionado-API.md`
+- `resources/documents/AI conversations/AI conversations - socgerFleet/PASO-A-PASO-Crear-Nueva-Version-API.md`
 - `CHANGELOG.md` - Ver historial de cambios
 
 ### ⚡ **10. Comandos Rápidos de Referencia**
