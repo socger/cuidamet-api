@@ -7,6 +7,18 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Added
+- **Endpoint de Perfiles de Usuario** - Nuevo endpoint público para acceder a los perfiles de cliente y proveedor desde el usuario
+  - **Endpoint**: `GET /v1/users/:id/profiles`
+  - **Respuesta**: Incluye `clientProfile`, `providerProfile`, `hasProfiles` y `profileType`
+  - **Tipos de perfil**: 'none', 'client', 'provider', 'both'
+  - **Relaciones bidireccionales**: Implementadas en User entity (`user.clientProfile`, `user.providerProfile`)
+  - **Documentación Swagger**: Completamente documentado con ejemplos y casos de uso
+  - **Servicio**: Nuevo método `getUserProfiles()` en UsersService
+  - **DTO**: `UserProfilesResponseDto` con metadata útil para frontend
+  - **Tests**: Archivo actualizado `user-profiles-relations-tests.http` con casos de prueba
+  - **Beneficio**: Una sola llamada API en lugar de múltiples queries para obtener perfiles
+
 ### Fixed
 - **Boolean Filters Fix** - Corrección crítica en filtros con campos booleanos en query parameters
   - **Problema**: Los filtros `?isActive=false` no devolvían resultados, `?isActive=true` era inconsistente
