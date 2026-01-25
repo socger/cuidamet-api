@@ -32,6 +32,10 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
 import { ClientProfilesModule } from './client-profiles/client-profiles.module';
+import { ProviderProfilesModule } from './provider-profiles/provider-profiles.module';
+import { ServiceConfigsModule } from './service-configs/service-configs.module';
+import { CertificatesModule } from './certificates/certificates.module';
+import { ServiceVariationsModule } from './service-variations/service-variations.module';
 
 @Module({
   imports: [
@@ -52,6 +56,10 @@ import { ClientProfilesModule } from './client-profiles/client-profiles.module';
     UsersModule,
     RolesModule,
     ClientProfilesModule,
+    ProviderProfilesModule,
+    ServiceConfigsModule,
+    CertificatesModule,
+    ServiceVariationsModule,
   ],
   controllers: [AppController],
   providers: [
