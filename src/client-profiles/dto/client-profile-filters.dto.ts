@@ -11,20 +11,12 @@ import { Type, Transform } from 'class-transformer';
 
 export class ClientProfileFiltersDto {
   @ApiPropertyOptional({
-    description: 'Búsqueda general (nombre, email, ubicación)',
+    description: 'Búsqueda general (email, ubicación)',
     example: 'María',
   })
   @IsOptional()
   @IsString()
   search?: string;
-
-  @ApiPropertyOptional({
-    description: 'Filtrar por nombre',
-    example: 'María García',
-  })
-  @IsOptional()
-  @IsString()
-  name?: string;
 
   @ApiPropertyOptional({
     description: 'Filtrar por ubicación',

@@ -64,7 +64,6 @@ export class ClientProfilesService {
   async findAll(filters: ClientProfileFiltersDto) {
     const {
       search,
-      name,
       location,
       language,
       preference,
@@ -83,16 +82,12 @@ export class ClientProfilesService {
     // Búsqueda general
     if (search) {
       query.andWhere(
-        '(profile.name LIKE :search OR profile.location LIKE :search OR user.email LIKE :search)',
+        '(profile.location LIKE :search OR user.email LIKE :search)',
         { search: `%${search}%` },
       );
     }
 
     // Filtros específicos
-    if (name) {
-      query.andWhere('profile.name LIKE :name', { name: `%${name}%` });
-    }
-
     if (location) {
       query.andWhere('profile.location LIKE :location', {
         location: `%${location}%`,
@@ -125,7 +120,7 @@ export class ClientProfilesService {
     }
 
     // Ordenamiento
-    const allowedSortFields = ['name', 'location', 'createdAt', 'updatedAt'];
+    const allowedSortFields = ['location', 'createdAt', 'updatedAt'];
     const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
     query.orderBy(`profile.${sortField}`, sortOrder);
 

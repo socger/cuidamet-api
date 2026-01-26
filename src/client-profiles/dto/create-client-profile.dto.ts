@@ -23,16 +23,6 @@ export class CreateClientProfileDto {
   @IsNotEmpty()
   userId: number;
 
-  @ApiProperty({
-    description: 'Nombre completo del cliente',
-    example: 'María García López',
-    maxLength: 100,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
-  name: string;
-
   @ApiPropertyOptional({
     description: 'Número de teléfono',
     example: '+34612345678',

@@ -70,7 +70,6 @@ export class ProviderProfilesService {
   async findAll(filters: ProviderProfileFiltersDto) {
     const {
       search,
-      name,
       location,
       language,
       availability,
@@ -93,8 +92,7 @@ export class ProviderProfilesService {
     // Búsqueda general
     if (search) {
       queryBuilder.andWhere(
-        '(provider.name LIKE :search OR ' +
-          'provider.location LIKE :search OR ' +
+        '(provider.location LIKE :search OR ' +
           'provider.languages LIKE :search OR ' +
           'provider.verifications LIKE :search OR ' +
           'provider.badges LIKE :search)',
@@ -103,10 +101,6 @@ export class ProviderProfilesService {
     }
 
     // Filtros específicos
-    if (name) {
-      queryBuilder.andWhere('provider.name LIKE :name', { name: `%${name}%` });
-    }
-
     if (location) {
       queryBuilder.andWhere('provider.location LIKE :location', {
         location: `%${location}%`,

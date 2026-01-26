@@ -25,16 +25,6 @@ export class CreateProviderProfileDto {
   @IsNumber({}, { message: 'El ID del usuario debe ser un número' })
   userId: number;
 
-  @ApiProperty({
-    description: 'Nombre completo del proveedor',
-    example: 'Ana García Martínez',
-    maxLength: 100,
-  })
-  @IsNotEmpty({ message: 'El nombre es obligatorio' })
-  @IsString({ message: 'El nombre debe ser texto' })
-  @MaxLength(100, { message: 'El nombre no puede exceder 100 caracteres' })
-  name: string;
-
   @ApiPropertyOptional({
     description: 'Número de teléfono del proveedor',
     example: '+34612345678',

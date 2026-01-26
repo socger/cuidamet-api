@@ -216,16 +216,10 @@ export class AuthService {
 
     // Crear perfil básico automáticamente con los datos del usuario
     try {
-      const fullName = [registerDto.firstName, registerDto.lastName]
-        .filter(Boolean)
-        .join(' ')
-        .trim() || registerDto.username;
-
       // Por defecto, crear un perfil de cliente (familiar)
       // El usuario puede crear un perfil de proveedor más tarde si lo desea
       await this.clientProfilesService.create({
         userId: userWithRoles.id,
-        name: fullName,
         location: 'Por configurar', // Valor temporal hasta que el usuario lo actualice
         profileStatus: 'draft', // Estado borrador hasta que complete su perfil
         // Campos opcionales se pueden agregar después

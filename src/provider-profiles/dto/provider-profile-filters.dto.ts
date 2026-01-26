@@ -12,20 +12,12 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ProviderProfileFiltersDto {
   @ApiPropertyOptional({
-    description: 'Búsqueda general en nombre, ubicación, idiomas, verificaciones y badges',
+    description: 'Búsqueda general en ubicación, idiomas, verificaciones y badges',
     example: 'Madrid',
   })
   @IsOptional()
   @IsString()
   search?: string;
-
-  @ApiPropertyOptional({
-    description: 'Filtrar por nombre del proveedor (búsqueda parcial)',
-    example: 'Ana García',
-  })
-  @IsOptional()
-  @IsString()
-  name?: string;
 
   @ApiPropertyOptional({
     description: 'Filtrar por ubicación (búsqueda parcial)',

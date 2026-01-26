@@ -18,13 +18,6 @@ export class ClientProfile extends BaseEntity {
   @ApiProperty({ description: 'ID del usuario', example: 1 })
   userId: number;
 
-  @Column({ length: 100 })
-  @ApiProperty({ 
-    description: 'Nombre completo del cliente', 
-    example: 'María García López' 
-  })
-  name: string;
-
   @Column({ length: 15, nullable: true })
   @ApiProperty({ 
     description: 'Número de teléfono', 
