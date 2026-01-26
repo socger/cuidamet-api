@@ -908,11 +908,11 @@ docker exec -it socgerfleet_mysql mysql -u socger -p
 Este repositorio mantiene toda la documentación técnica organizada:
 
 **Carpetas principales:**
-- `resources/documents/AI conversations/AI conversations - cuidamet-api/` - **📝 Conversaciones y decisiones de este proyecto** (crea aquí nuevos .md)
+- `resources/docs/IA chats/` - **📝 Conversaciones y decisiones de este proyecto** (crea aquí nuevos .md)
 - `resources/documents/AI conversations/AI conversations - socgerFleet/` - Conversaciones del proyecto template (NO modificar)
 
 **⚠️ IMPORTANTE para crear nuevos archivos .md:**
-- ✅ **CREAR EN**: `resources/documents/AI conversations/AI conversations - cuidamet-api/`
+- ✅ **CREAR EN**: `resources/docs/IA chats/`
   - Organiza por features en subcarpetas numeradas: `001 - Nombre Feature/`, `002 - Otra Feature/`
   - Archivos numerados secuencialmente: `001-1-descripcion.md`, `001-2-implementacion.md`
 - ❌ **NO CREAR EN**: `resources/documents/AI conversations/` (raíz)
@@ -945,7 +945,7 @@ El proyecto incluye documentación detallada para diferentes aspectos:
 - [CHANGELOG.md](CHANGELOG.md) - Historial de cambios del proyecto versionado con Semantic Versioning
 
 **Conversaciones con IA:**
-- **Proyecto actual**: `resources/documents/AI conversations/AI conversations - cuidamet-api/`
+- **Proyecto actual**: `resources/docs/IA chats/`
 - **Template base**: `resources/documents/AI conversations/AI conversations - socgerFleet/` (NO modificar)
 
 ### **📝 Mantenimiento del Proyecto**

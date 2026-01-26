@@ -4,7 +4,7 @@ Esta carpeta contiene toda la documentación técnica y conversaciones con asist
 
 ## 📁 Estructura de Carpetas
 
-### `AI conversations - cuidamet-api/`
+### `IA chats/`
 **✅ Documentación del proyecto ACTUAL (Cuidamet API)**
 
 Esta es la carpeta donde debes **CREAR TODOS los nuevos archivos .md** relacionados con:
@@ -15,7 +15,7 @@ Esta es la carpeta donde debes **CREAR TODOS los nuevos archivos .md** relaciona
 
 **Organización recomendada:**
 ```
-AI conversations - cuidamet-api/
+IA chats/
 ├── 001 - Nombre de Feature/
 │   ├── 001-0 - Conversación inicial.md
 │   ├── 001-1 - Análisis técnico.md
@@ -50,7 +50,7 @@ Esta carpeta contiene documentación del template base del cual deriva este proy
 ## ⚠️ REGLAS IMPORTANTES
 
 ### ✅ HACER:
-1. Crear nuevos archivos .md en `AI conversations - cuidamet-api/`
+1. Crear nuevos archivos .md en `IA chats/`
 2. Organizar por features con carpetas numeradas
 3. Numerar archivos secuencialmente dentro de cada feature
 4. Documentar todas las decisiones técnicas importantes

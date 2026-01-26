@@ -18,12 +18,12 @@
   - Archivos con formato `PASO-A-PASO-*.md` - Guías de procesos específicos
   - Archivos con formato `GUIA-*.md` - Documentación general
   - Archivo `035-BOOLEAN-FILTERS-FIX...md` - **CRÍTICO** si creas DTOs con filtros
-- `AI conversations - cuidamet-api/` - **Documentación de este proyecto** (crear nuevos .md AQUÍ)
+- `IA chats/` - **Documentación de este proyecto** (crear nuevos .md AQUÍ)
   - Organizar por features: `001 - Nombre Feature/`, `002 - Otra Feature/`
   - Archivos numerados: `001-1-descripcion.md`, `001-2-implementacion.md`
 
 **⚠️ REGLAS CRÍTICAS:**
-- ✅ **CREAR nuevos .md EN**: `resources/documents/AI conversations/AI conversations - cuidamet-api/`
+- ✅ **CREAR nuevos .md EN**: `resources/docs/IA chats/`
 - ❌ **NO CREAR EN**: `resources/documents/AI conversations/` (raíz de la carpeta)
 - ❌ **NO MODIFICAR**: `resources/documents/AI conversations/AI conversations - socgerFleet/`
 
