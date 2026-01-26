@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -8,6 +8,8 @@ import { PasswordManagementService } from './services/password-management.servic
 import { LoginThrottlerGuard } from './guards/login-throttler.guard';
 import { UsersModule } from '../users/users.module';
 import { RolesModule } from '../roles/roles.module';
+import { ClientProfilesModule } from '../client-profiles/client-profiles.module';
+import { ProviderProfilesModule } from '../provider-profiles/provider-profiles.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -30,6 +32,8 @@ import { User } from '../entities/user.entity';
     ]),
     UsersModule,
     RolesModule,
+    forwardRef(() => ClientProfilesModule),
+    forwardRef(() => ProviderProfilesModule),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

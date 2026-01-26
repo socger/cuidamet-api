@@ -2,6 +2,9 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  Inject,
+  forwardRef,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +12,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { RolesService } from '../roles/roles.service';
+import { ClientProfilesService } from '../client-profiles/client-profiles.service';
+import { ProviderProfilesService } from '../provider-profiles/provider-profiles.service';
 import { RefreshTokenService } from './services/refresh-token.service';
 import { PasswordManagementService } from './services/password-management.service';
 import { LoginAttempt } from '../entities/login-attempt.entity';
@@ -38,9 +43,15 @@ export interface AuthResponse {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private rolesService: RolesService,
+    @Inject(forwardRef(() => ClientProfilesService))
+    private clientProfilesService: ClientProfilesService,
+    @Inject(forwardRef(() => ProviderProfilesService))
+    private providerProfilesService: ProviderProfilesService,
     private jwtService: JwtService,
     private configService: ConfigService,
     private refreshTokenService: RefreshTokenService,
@@ -200,7 +211,31 @@ export class AuthService {
       await this.passwordManagementService.sendVerificationEmail(userWithRoles);
     } catch (error) {
       // Log del error pero no bloquear el registro
-      console.error('Error al enviar email de verificación:', error.message);
+      this.logger.warn(`Error al enviar email de verificación: ${error.message}`);
+    }
+
+    // Crear perfil básico automáticamente con los datos del usuario
+    try {
+      const fullName = [registerDto.firstName, registerDto.lastName]
+        .filter(Boolean)
+        .join(' ')
+        .trim() || registerDto.username;
+
+      // Por defecto, crear un perfil de cliente (familiar)
+      // El usuario puede crear un perfil de proveedor más tarde si lo desea
+      await this.clientProfilesService.create({
+        userId: userWithRoles.id,
+        name: fullName,
+        location: 'Por configurar', // Valor temporal hasta que el usuario lo actualice
+        profileStatus: 'draft', // Estado borrador hasta que complete su perfil
+        // Campos opcionales se pueden agregar después
+      }, userWithRoles.id);
+
+      this.logger.log(`Perfil de cliente creado automáticamente para usuario ${userWithRoles.id}`);
+    } catch (error) {
+      // Log del error pero no bloquear el registro
+      // El perfil se puede crear manualmente después si falla
+      this.logger.warn(`Error al crear perfil automático: ${error.message}`);
     }
 
     // Generar tokens

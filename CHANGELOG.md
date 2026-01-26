@@ -7,6 +7,19 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Added
+- **Auto-creación de Perfiles al Registrarse** - Los datos del usuario se copian automáticamente a su perfil
+  - **Feature**: Al registrarse, se crea automáticamente un `ClientProfile` con los datos del usuario
+  - **Nombre completo**: Combina `firstName` + `lastName` en el campo `name` del perfil
+  - **Estado inicial**: Perfil creado con `profileStatus: 'draft'` y `location: 'Por configurar'`
+  - **No bloqueante**: Si falla la creación del perfil, el registro continúa normalmente
+  - **Beneficio**: Usuario no necesita rellenar nombre/email nuevamente al completar su perfil
+  - **Logging**: Logs estructurados con `Logger` para debugging
+  - **Archivos modificados**:
+    - `src/auth/auth.module.ts` - Imports de `ClientProfilesModule` y `ProviderProfilesModule`
+    - `src/auth/auth.service.ts` - Lógica de creación automática de perfil en método `register()`
+  - **Documentación**: [006-2 - AUTO-CREATE-PROFILE-ON-REGISTER.md](resources/documents/AI%20conversations/AI%20conversations%20-%20cuidamet-api/006%20-%20Error%20de%20registro%20al%20crear%20perfil%20familiar/006-2 - AUTO-CREATE-PROFILE-ON-REGISTER.md)
+
 ### Fixed
 - **Email Service Error on Register** - Error "Internal server error" al registrar usuarios aunque se guardaban correctamente en BD
   - **Problema**: El registro fallaba con error 500 aunque el usuario se creaba en la base de datos
