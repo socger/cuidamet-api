@@ -12,7 +12,7 @@ export class LoginDto {
 
   @ApiProperty({
     description: 'Contraseña del usuario (mínimo 6 caracteres)',
-    example: 'admin123',
+    example: 'Admin123!',
     minLength: 6,
     type: String,
   })
