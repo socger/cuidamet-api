@@ -11,6 +11,7 @@ import {
   Req,
   Get,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import {
@@ -61,8 +62,8 @@ export class AuthController {
   })
   @ApiHeader({
     name: 'user-agent',
-    required: false,
-    description: 'User agent del navegador (opcional, se envía automáticamente)',
+    required: true,
+    description: 'User agent del navegador (requerido para identificar el dispositivo)',
   })
   @ApiResponse({
     status: 200,
@@ -100,6 +101,11 @@ export class AuthController {
     @Headers('user-agent') userAgent: string,
     @Ip() ipAddress: string,
   ) {
+    if (!userAgent) {
+      throw new BadRequestException(
+        'Header user-agent es requerido. Ejemplos de valores válidos: SwaggerUI/1.0, PostmanRuntime/7.39.0, Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0, MyApp/1.0 (Linux)',
+      );
+    }
     return this.authService.login(loginDto, userAgent, ipAddress);
   }
 

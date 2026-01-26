@@ -75,7 +75,7 @@ export class AuthService {
 
   async login(
     loginDto: LoginDto,
-    deviceInfo?: string,
+    deviceInfo: string,
     ipAddress?: string,
   ): Promise<AuthResponse> {
     const identifier = loginDto.email;
