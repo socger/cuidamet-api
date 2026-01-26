@@ -66,11 +66,10 @@ export class EmailService {
 
       this.logger.log(`Email de verificación enviado a ${email}`);
     } catch (error) {
-      this.logger.error(
-        `Error enviando email de verificación a ${email}:`,
-        error,
+      this.logger.warn(
+        `Error enviando email de verificación a ${email}: ${error.message}. Esto no afecta el registro del usuario.`,
       );
-      throw new Error('No se pudo enviar el email de verificación');
+      // NO lanzar error - permitir que el registro continúe aunque falle el email
     }
   }
 
@@ -113,11 +112,10 @@ export class EmailService {
 
       this.logger.log(`Email de reset de contraseña enviado a ${email}`);
     } catch (error) {
-      this.logger.error(
-        `Error enviando email de reset de contraseña a ${email}:`,
-        error,
+      this.logger.warn(
+        `Error enviando email de reset de contraseña a ${email}: ${error.message}`,
       );
-      throw new Error('No se pudo enviar el email de recuperación');
+      // NO lanzar error - en desarrollo puede no haber servidor SMTP
     }
   }
 

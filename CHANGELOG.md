@@ -7,6 +7,18 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Fixed
+- **Email Service Error on Register** - Error "Internal server error" al registrar usuarios aunque se guardaban correctamente en BD
+  - **Problema**: El registro fallaba con error 500 aunque el usuario se creaba en la base de datos
+  - **Causa**: El envío de email de verificación lanzaba excepción cuando no había servidor SMTP configurado (entorno desarrollo)
+  - **Impacto**: Usuarios no podían completar el registro en desarrollo/QA, aunque estaban en la BD
+  - **Solución**: Hacer el envío de email NO bloqueante con try-catch en `auth.service.ts`
+  - **Archivos modificados**:
+    - `src/auth/auth.service.ts` - Agregado try-catch en `sendVerificationEmail()`
+    - `src/auth/services/email.service.ts` - Cambiado de `logger.error()` a `logger.warn()` y eliminado `throw`
+  - **Resultado**: El registro se completa exitosamente aunque falle el email, con logging apropiado
+  - **Documentación**: [006-1 - FIX-EMAIL-SERVICE-ERROR-ON-REGISTER.md](resources/documents/AI conversations/AI conversations - cuidamet-api/006 - Error de registro al crear perfil familiar/006-1 - FIX-EMAIL-SERVICE-ERROR-ON-REGISTER.md)
+
 ### Added
 - **Endpoint de Perfiles de Usuario** - Nuevo endpoint público para acceder a los perfiles de cliente y proveedor desde el usuario
   - **Endpoint**: `GET /v1/users/:id/profiles`

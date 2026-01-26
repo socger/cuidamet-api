@@ -195,8 +195,13 @@ export class AuthService {
     // Obtener el usuario con roles para estar seguros
     const userWithRoles = await this.usersService.findOne(user.id);
 
-    // Enviar email de verificación
-    await this.passwordManagementService.sendVerificationEmail(userWithRoles);
+    // Enviar email de verificación (no bloqueante - si falla, no afecta el registro)
+    try {
+      await this.passwordManagementService.sendVerificationEmail(userWithRoles);
+    } catch (error) {
+      // Log del error pero no bloquear el registro
+      console.error('Error al enviar email de verificación:', error.message);
+    }
 
     // Generar tokens
     const accessToken = this.generateAccessToken(userWithRoles);
