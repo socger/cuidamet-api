@@ -26,7 +26,16 @@ import helmet from 'helmet';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: true,
+  });
+
+  // ===================================
+  // Configuración de límite de tamaño de payload
+  // ===================================
+  // Aumentar el límite para permitir imágenes base64 grandes (10MB)
+  app.use(require('express').json({ limit: '10mb' }));
+  app.use(require('express').urlencoded({ limit: '10mb', extended: true }));
 
   // ===================================
   // Configuración de CORS

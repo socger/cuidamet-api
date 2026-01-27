@@ -36,13 +36,13 @@ export class CreateProviderProfileDto {
   phone?: string;
 
   @ApiPropertyOptional({
-    description: 'URL de la foto de perfil',
+    description: 'URL de la foto de perfil o imagen en base64',
     example: 'https://example.com/photos/provider123.jpg',
-    maxLength: 500,
+    maxLength: 10485760,
   })
   @IsOptional()
   @IsString({ message: 'La URL de la foto debe ser texto' })
-  @MaxLength(500, { message: 'La URL no puede exceder 500 caracteres' })
+  @MaxLength(10485760, { message: 'La foto no puede exceder 10MB' })
   photoUrl?: string;
 
   @ApiProperty({

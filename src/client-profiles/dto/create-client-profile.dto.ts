@@ -34,13 +34,12 @@ export class CreateClientProfileDto {
   phone?: string;
 
   @ApiPropertyOptional({
-    description: 'URL de la foto de perfil',
+    description: 'URL de la foto de perfil o imagen en base64',
     example: 'https://example.com/photos/user123.jpg',
-    maxLength: 500,
+    maxLength: 10485760,
   })
-  @IsUrl()
   @IsOptional()
-  @MaxLength(500)
+  @MaxLength(10485760)
   photoUrl?: string;
 
   @ApiProperty({

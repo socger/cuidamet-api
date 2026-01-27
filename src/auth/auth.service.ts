@@ -214,23 +214,8 @@ export class AuthService {
       this.logger.warn(`Error al enviar email de verificación: ${error.message}`);
     }
 
-    // Crear perfil básico automáticamente con los datos del usuario
-    try {
-      // Por defecto, crear un perfil de cliente (familiar)
-      // El usuario puede crear un perfil de proveedor más tarde si lo desea
-      await this.clientProfilesService.create({
-        userId: userWithRoles.id,
-        location: 'Por configurar', // Valor temporal hasta que el usuario lo actualice
-        profileStatus: 'draft', // Estado borrador hasta que complete su perfil
-        // Campos opcionales se pueden agregar después
-      }, userWithRoles.id);
-
-      this.logger.log(`Perfil de cliente creado automáticamente para usuario ${userWithRoles.id}`);
-    } catch (error) {
-      // Log del error pero no bloquear el registro
-      // El perfil se puede crear manualmente después si falla
-      this.logger.warn(`Error al crear perfil automático: ${error.message}`);
-    }
+    // NO crear perfil automáticamente - el usuario lo creará desde el frontend
+    // al completar el formulario de perfil familiar o profesional
 
     // Generar tokens
     const accessToken = this.generateAccessToken(userWithRoles);
