@@ -27,7 +27,7 @@ export class ProviderProfile extends BaseEntity {
   })
   phone: string;
 
-  @Column({ name: 'photo_url', length: 500, nullable: true })
+  @Column({ name: 'photo_url', type: 'text', nullable: true })
   @ApiProperty({ 
     description: 'URL de la foto de perfil', 
     example: 'https://example.com/photos/provider123.jpg',
