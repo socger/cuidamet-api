@@ -135,6 +135,9 @@ export class AuthService {
         null,
       );
 
+      // Mapear roles a un array de nombres de roles
+      const roleNames = user.roles?.map(role => role.name) || [];
+
       return {
         message: 'Login exitoso',
         accessToken,
@@ -145,7 +148,7 @@ export class AuthService {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
-          roles: user.roles,
+          roles: roleNames, // Array de strings con nombres de roles
         },
       };
     } catch (error) {
