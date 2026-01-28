@@ -19,6 +19,14 @@ export class RoleSeeder {
         name: 'user',
         description: 'Usuario estándar con acceso básico',
       },
+      {
+        name: 'provider',
+        description: 'Proveedor de servicios profesionales',
+      },
+      {
+        name: 'client',
+        description: 'Cliente que busca servicios de cuidado',
+      },
     ];
 
     for (const roleData of roles) {
