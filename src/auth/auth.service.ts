@@ -188,19 +188,27 @@ export class AuthService {
       throw new ConflictException('El nombre de usuario ya está en uso');
     }
 
-    // Obtener rol por defecto
-    let defaultRole = await this.rolesService.findByName('user');
-    if (!defaultRole) {
-      defaultRole = await this.rolesService.create({
-        name: 'user',
-        description: 'Usuario básico del sistema',
+    // Obtener rol según el tipo de perfil seleccionado
+    const roleName = registerDto.profileType; // 'provider' o 'client'
+    let role = await this.rolesService.findByName(roleName);
+    
+    // Si el rol no existe, crearlo (esto solo debería pasar en entornos de desarrollo)
+    if (!role) {
+      const roleDescription = 
+        roleName === 'provider' 
+          ? 'Cuidador profesional que ofrece servicios' 
+          : 'Cliente familiar que busca y contrata servicios';
+      
+      role = await this.rolesService.create({
+        name: roleName,
+        description: roleDescription,
       });
     }
 
-    // Crear el usuario CON EL ROL incluido en la creación
+    // Crear el usuario CON EL ROL CORRECTO incluido en la creación
     const createUserDto = {
       ...registerDto,
-      roleIds: [defaultRole.id], // Incluir rol en la creación inicial
+      roleIds: [role.id], // Asignar el rol correspondiente al tipo de perfil
     };
 
     const user = await this.usersService.create(createUserDto);

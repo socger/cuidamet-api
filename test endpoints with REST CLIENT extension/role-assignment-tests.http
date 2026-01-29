@@ -1,0 +1,68 @@
+### Test: Registro de Usuario con Rol Provider
+POST http://localhost:3000/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "test_provider_001",
+  "email": "test_provider_001@cuidamet.com",
+  "password": "SecurePass123!",
+  "firstName": "María",
+  "lastName": "García",
+  "profileType": "provider"
+}
+
+###
+
+### Test: Registro de Usuario con Rol Client
+POST http://localhost:3000/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "test_client_001",
+  "email": "test_client_001@cuidamet.com",
+  "password": "SecurePass123!",
+  "firstName": "Juan",
+  "lastName": "Pérez",
+  "profileType": "client"
+}
+
+###
+
+### Verificar roles del usuario provider (requiere token de autenticación)
+GET http://localhost:3000/v1/users/search?q=test_provider_001&limit=1
+
+###
+
+### Verificar roles del usuario client (requiere token de autenticación)
+GET http://localhost:3000/v1/users/search?q=test_client_001&limit=1
+
+###
+
+### Test de Validación: profileType inválido (debe fallar)
+POST http://localhost:3000/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "test_invalid_001",
+  "email": "test_invalid_001@cuidamet.com",
+  "password": "SecurePass123!",
+  "firstName": "Test",
+  "lastName": "Invalid",
+  "profileType": "invalid_role"
+}
+
+###
+
+### Test de Validación: Sin profileType (debe fallar)
+POST http://localhost:3000/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "test_no_profile_001",
+  "email": "test_no_profile_001@cuidamet.com",
+  "password": "SecurePass123!",
+  "firstName": "Test",
+  "lastName": "NoProfile"
+}
+
+###

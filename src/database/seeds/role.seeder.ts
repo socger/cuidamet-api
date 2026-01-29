@@ -21,11 +21,11 @@ export class RoleSeeder {
       },
       {
         name: 'provider',
-        description: 'Proveedor de servicios profesionales',
+        description: 'Cuidador profesional que ofrece servicios',
       },
       {
         name: 'client',
-        description: 'Cliente que busca servicios de cuidado',
+        description: 'Cliente familiar que busca y contrata servicios',
       },
     ];
 

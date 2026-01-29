@@ -44,7 +44,9 @@ CREATE TABLE IF NOT EXISTS user_roles (
 INSERT INTO roles (name, description) VALUES 
 ('admin', 'Administrador del sistema con todos los permisos'),
 ('user', 'Usuario básico del sistema'),
-('moderator', 'Moderador con permisos especiales')
+('moderator', 'Moderador con permisos especiales'),
+('provider', 'Cuidador profesional que ofrece servicios'),
+('client', 'Cliente familiar que busca y contrata servicios')
 ON DUPLICATE KEY UPDATE description = VALUES(description);
 
 -- Insertar usuario administrador por defecto

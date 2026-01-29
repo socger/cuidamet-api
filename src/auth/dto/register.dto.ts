@@ -4,6 +4,7 @@ import {
   MaxLength,
   IsEmail,
   IsOptional,
+  IsIn,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -61,4 +62,16 @@ export class RegisterDto {
   @IsString()
   @MaxLength(100)
   lastName?: string;
+
+  @ApiProperty({
+    description: 'Tipo de perfil del usuario: provider (cuidador) o client (familiar)',
+    example: 'provider',
+    enum: ['provider', 'client'],
+    type: String,
+  })
+  @IsString()
+  @IsIn(['provider', 'client'], {
+    message: 'El tipo de perfil debe ser "provider" o "client"',
+  })
+  profileType: 'provider' | 'client';
 }
