@@ -8,6 +8,19 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- **Endpoint de Cambio de Rol Activo** - Nuevo endpoint para alternar entre perfiles cliente y proveedor
+  - **Endpoint**: `PATCH /v1/users/:userId/active-role`
+  - **Body**: `{ "roleName": "client" | "provider" }`
+  - **Respuesta**: Devuelve el perfil correspondiente si existe, o `null` si debe crearse
+  - **Funcionalidad**:
+    - Asigna automáticamente el rol si el usuario no lo tiene
+    - Mantiene múltiples roles (un usuario puede tener ambos)
+    - Devuelve `profileType` para indicar si debe cargar o crear el perfil
+  - **Servicio**: Nuevo método `switchActiveRole()` en UsersService
+  - **Test**: Archivo `switch-profile-tests.http` con casos de prueba
+  - **Documentación**: Guía completa en `resources/docs/IA chats/019-1`
+  - **Beneficio**: Permite cambiar de perfil sin perder datos ni crear duplicados
+
 - **Auto-creación de Perfiles al Registrarse** - Los datos del usuario se copian automáticamente a su perfil
   - **Feature**: Al registrarse, se crea automáticamente un `ClientProfile` con los datos del usuario
   - **Nombre completo**: Combina `firstName` + `lastName` en el campo `name` del perfil

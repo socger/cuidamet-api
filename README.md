@@ -692,8 +692,10 @@ GET  /auth/verify-email?token=xxx     # Verificar email de usuario
 GET    /users             # Listar usuarios (con filtros)
 GET    /users/search      # Búsqueda rápida
 GET    /users/:id         # Obtener usuario
+GET    /users/:id/profiles # Obtener perfiles del usuario
 POST   /users             # Crear usuario
 PUT    /users/:id         # Actualizar usuario
+PATCH  /users/:id/active-role  # Cambiar rol activo (client/provider)
 DELETE /users/:id         # Eliminar usuario
 POST   /users/:id/roles/:roleId    # Asignar rol
 DELETE /users/:id/roles/:roleId    # Remover rol

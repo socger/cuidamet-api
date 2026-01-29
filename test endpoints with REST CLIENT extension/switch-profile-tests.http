@@ -1,0 +1,144 @@
+### ============================================
+### Test: Cambio de Rol Activo del Usuario
+### ============================================
+### Descripción: Prueba el endpoint para cambiar entre perfiles cliente y proveedor
+### Archivo: switch-profile-tests.http
+### Fecha: 2026-01-29
+### ============================================
+
+### Variables
+@baseUrl = http://localhost:3000/v1
+@userId = 33
+@accessToken = YOUR_ACCESS_TOKEN_HERE
+
+### ============================================
+### 1. Login para obtener el token
+### ============================================
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "lico@lico.com",
+  "password": "lico123"
+}
+
+### Guardar el accessToken de la respuesta anterior y copiarlo arriba
+
+### ============================================
+### 2. Cambiar a perfil PROFESIONAL (provider)
+### ============================================
+PATCH {{baseUrl}}/users/{{userId}}/active-role
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "roleName": "provider"
+}
+
+### Respuesta esperada:
+### {
+###   "message": "Rol activo actualizado exitosamente",
+###   "data": {
+###     "activeRole": "provider",
+###     "profile": { ... },
+###     "profileType": "provider"  // o "none" si no existe el perfil
+###   }
+### }
+
+### ============================================
+### 3. Cambiar a perfil FAMILIAR (client)
+### ============================================
+PATCH {{baseUrl}}/users/{{userId}}/active-role
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "roleName": "client"
+}
+
+### Respuesta esperada:
+### {
+###   "message": "Rol activo actualizado exitosamente",
+###   "data": {
+###     "activeRole": "client",
+###     "profile": { ... },
+###     "profileType": "client"  // o "none" si no existe el perfil
+###   }
+### }
+
+### ============================================
+### 4. Verificar roles asignados del usuario
+### ============================================
+GET {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{accessToken}}
+
+### Debería ver en la respuesta:
+### {
+###   "roles": [
+###     { "name": "provider" },
+###     { "name": "client" }
+###   ]
+### }
+
+### ============================================
+### 5. Obtener perfiles del usuario
+### ============================================
+GET {{baseUrl}}/users/{{userId}}/profiles
+Authorization: Bearer {{accessToken}}
+
+### Respuesta esperada:
+### {
+###   "message": "Perfiles obtenidos exitosamente",
+###   "data": {
+###     "clientProfile": { ... } o null,
+###     "providerProfile": { ... } o null,
+###     "hasProfiles": true/false,
+###     "profileType": "none" | "client" | "provider" | "both"
+###   }
+### }
+
+### ============================================
+### ESCENARIOS DE PRUEBA
+### ============================================
+
+### Escenario 1: Usuario SIN perfil profesional
+### - Hacer login con usuario que solo tiene perfil cliente
+### - Cambiar a "provider"
+### - Verificar que el rol se asigna
+### - Verificar que profileType = "none" (porque no existe el perfil)
+### - En el frontend, esto debe redirigir a profesionalRegistration
+
+### Escenario 2: Usuario CON perfil profesional
+### - Hacer login con usuario que tiene perfil proveedor
+### - Cambiar a "provider"
+### - Verificar que profile no es null
+### - Verificar que profileType = "provider"
+### - En el frontend, esto debe mostrar ProfesionalProfilePage con los datos
+
+### Escenario 3: Usuario CON ambos perfiles
+### - Hacer login con usuario que tiene ambos perfiles
+### - Cambiar de "client" a "provider" y viceversa
+### - Verificar que siempre devuelve el perfil correspondiente
+### - Verificar en BD que tiene ambos roles asignados
+
+### ============================================
+### NOTAS IMPORTANTES
+### ============================================
+### 
+### 1. El endpoint ASIGNA automáticamente el rol si no existe
+###    - No necesitas hacer POST /users/{id}/roles/{roleId} antes
+### 
+### 2. Si profileType = "none", significa que:
+###    - El usuario tiene el rol asignado
+###    - Pero NO tiene el perfil creado en client_profiles o provider_profiles
+###    - El frontend debe redirigir a la creación del perfil
+### 
+### 3. Si profile no es null, significa que:
+###    - El usuario tiene el rol Y el perfil
+###    - El frontend debe mostrar la página del perfil con los datos
+### 
+### 4. Los roles NO se eliminan al cambiar de perfil
+###    - Un usuario puede acumular múltiples roles
+###    - Esto permite cambiar entre perfiles sin perder acceso
+### 
+### ============================================

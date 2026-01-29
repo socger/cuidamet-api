@@ -457,4 +457,74 @@ export class UsersService {
 
     return this.userRepository.save(user);
   }
+
+  /**
+   * Cambiar el rol activo del usuario
+   * ELIMINA el rol anterior y asigna el nuevo
+   * Un usuario solo puede tener UN rol activo a la vez (client O provider, no ambos)
+   * @param userId ID del usuario
+   * @param roleName Nombre del rol a activar ('client' o 'provider')
+   * @returns Objeto con el rol actualizado y el perfil correspondiente
+   */
+  async switchActiveRole(
+    userId: number,
+    roleName: 'client' | 'provider',
+  ): Promise<{
+    activeRole: string;
+    profile: any | null;
+    profileType: 'client' | 'provider' | 'none';
+  }> {
+    // 1. Obtener usuario con roles y perfiles
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles', 'clientProfile', 'providerProfile'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuario con ID ${userId} no encontrado`);
+    }
+
+    // 2. Buscar el nuevo rol solicitado
+    const newRole = await this.roleRepository.findOne({
+      where: { name: roleName },
+    });
+
+    if (!newRole) {
+      throw new NotFoundException(`Rol "${roleName}" no encontrado`);
+    }
+
+    // 3. ELIMINAR todos los roles client/provider anteriores
+    const rolesToRemove = ['client', 'provider'];
+    user.roles = user.roles.filter(
+      (role) => !rolesToRemove.includes(role.name),
+    );
+
+    console.log(
+      `🗑️ Roles eliminados para usuario ${userId}. Asignando nuevo rol: "${roleName}"`,
+    );
+
+    // 4. Asignar SOLO el nuevo rol
+    user.roles.push(newRole);
+    await this.userRepository.save(user);
+
+    console.log(`✅ Usuario ${userId} ahora tiene SOLO el rol "${roleName}"`);
+
+    // 5. Retornar el perfil correspondiente
+    let profile = null;
+    let profileType: 'client' | 'provider' | 'none' = 'none';
+
+    if (roleName === 'client') {
+      profile = user.clientProfile || null;
+      profileType = profile ? 'client' : 'none';
+    } else if (roleName === 'provider') {
+      profile = user.providerProfile || null;
+      profileType = profile ? 'provider' : 'none';
+    }
+
+    return {
+      activeRole: roleName,
+      profile,
+      profileType,
+    };
+  }
 }

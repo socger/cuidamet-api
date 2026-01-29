@@ -362,6 +362,49 @@ export class UsersController {
     };
   }
 
+  @Patch(':userId/active-role')
+  @ApiOperation({
+    summary: 'Cambiar el rol activo del usuario',
+    description:
+      'Cambia el rol activo del usuario entre cliente y proveedor. ' +
+      'Si el usuario no tiene el rol asignado, se asigna automáticamente. ' +
+      'Devuelve el perfil correspondiente si existe.',
+  })
+  @ApiParam({ name: 'userId', type: Number, description: 'ID del usuario' })
+  @ApiResponse({
+    status: 200,
+    description: 'Rol activo cambiado exitosamente',
+    schema: {
+      example: {
+        message: 'Rol activo actualizado exitosamente',
+        data: {
+          activeRole: 'provider',
+          profile: {
+            id: 1,
+            firstName: 'Juan',
+            lastName: 'Pérez',
+            email: 'juan@example.com',
+            // ... otros campos del perfil
+          },
+          profileType: 'provider',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuario o rol no encontrado',
+  })
+  async switchActiveRole(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() body: { roleName: 'client' | 'provider' },
+  ) {
+    return {
+      message: 'Rol activo actualizado exitosamente',
+      data: await this.usersService.switchActiveRole(userId, body.roleName),
+    };
+  }
+
   @Delete(':userId/roles/:roleId')
   @ApiOperation({
     summary: 'Remover rol de usuario',
