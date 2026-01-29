@@ -191,6 +191,41 @@ export class UsersService {
     return user;
   }
 
+  /**
+   * Obtener usuario con toda su información de perfil completa
+   * Incluye clientProfile, providerProfile (con services y variations)
+   * @param id ID del usuario
+   * @returns Usuario con perfiles completos
+   */
+  async findOneWithProfiles(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: [
+        'roles',
+        'clientProfile',
+        'providerProfile',
+        'providerProfile.services',
+        'providerProfile.services.variations',
+      ],
+      select: [
+        'id',
+        'username',
+        'email',
+        'firstName',
+        'lastName',
+        'isActive',
+        'emailVerified',
+        'createdAt',
+      ],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+    }
+
+    return user;
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({
       where: { email },

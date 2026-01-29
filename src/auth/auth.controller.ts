@@ -23,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LoginThrottlerGuard } from './guards/login-throttler.guard';
 import { LoginDto } from './dto/login.dto';
@@ -45,7 +46,10 @@ interface AuthenticatedRequest extends Request {
 @ApiTags('auth')
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private usersService: UsersService,
+  ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -255,10 +259,15 @@ export class AuthController {
     },
   })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  getProfile(@Req() req: AuthenticatedRequest) {
+  async getProfile(@Req() req: AuthenticatedRequest) {
+    // Obtener el usuario completo con todos sus perfiles y relaciones
+    const userWithProfiles = await this.usersService.findOneWithProfiles(
+      req.user.id,
+    );
+
     return {
       message: 'Perfil obtenido exitosamente',
-      user: req.user,
+      user: userWithProfiles,
     };
   }
 

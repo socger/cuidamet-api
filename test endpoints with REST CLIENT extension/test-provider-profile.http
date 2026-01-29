@@ -1,0 +1,78 @@
+###
+# TEST PERFIL DE PROFESIONAL - Verificar que se cargan todos los datos
+# Incluye: foto, idiomas, servicios, etc.
+###
+
+@baseUrl = http://localhost:3000/v1
+@contentType = application/json
+
+###
+# 1. REGISTRAR USUARIO PROFESIONAL
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "profesional1",
+  "email": "profesional1@cuidamet.com",
+  "password": "123456",
+  "firstName": "María",
+  "lastName": "González",
+  "profileType": "provider"
+}
+
+###
+# 2. LOGIN PROFESIONAL (obtener token)
+# @name loginProvider
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "profesional1@cuidamet.com",
+  "password": "123456"
+}
+
+###
+# 3. CREAR PERFIL DE PROFESIONAL (con todos los datos)
+POST {{baseUrl}}/provider-profiles
+Content-Type: {{contentType}}
+Authorization: Bearer {{loginProvider.response.body.accessToken}}
+
+{
+  "userId": {{loginProvider.response.body.user.id}},
+  "phone": "+34612345678",
+  "photoUrl": "https://example.com/photos/maria-gonzalez.jpg",
+  "location": "Madrid, España",
+  "latitude": 40.4168,
+  "longitude": -3.7038,
+  "languages": ["Español", "Inglés", "Francés"],
+  "availability": ["Mañanas", "Tardes", "Fines de semana"],
+  "profileStatus": "published",
+  "isPremium": true,
+  "providerStatus": "available"
+}
+
+###
+# 4. OBTENER PERFIL COMPLETO (debe incluir providerProfile con todos los datos)
+POST {{baseUrl}}/auth/profile
+Authorization: Bearer {{loginProvider.response.body.accessToken}}
+
+###
+# 5. AGREGAR UN SERVICIO AL PERFIL
+POST {{baseUrl}}/service-configs
+Content-Type: {{contentType}}
+Authorization: Bearer {{loginProvider.response.body.accessToken}}
+
+{
+  "providerId": "SE_ACTUALIZA_DESPUES_DE_CREAR_PERFIL",
+  "careCategory": "Personas Mayores",
+  "basePrice": 15.50,
+  "currency": "EUR",
+  "priceUnit": "hora",
+  "description": "Cuidado especializado de personas mayores con experiencia en demencia",
+  "isActive": true
+}
+
+###
+# 6. VERIFICAR PERFIL CON SERVICIOS
+POST {{baseUrl}}/auth/profile
+Authorization: Bearer {{loginProvider.response.body.accessToken}}
