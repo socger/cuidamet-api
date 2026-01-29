@@ -8,6 +8,8 @@ import { Repository, In, SelectQueryBuilder } from 'typeorm'; // Añadir SelectQ
 import * as bcrypt from 'bcrypt';
 import { User } from '../entities/user.entity';
 import { Role } from '../entities/role.entity';
+import { ClientProfile } from '../entities/client-profile.entity';
+import { ProviderProfile } from '../entities/provider-profile.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
@@ -21,6 +23,10 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
+    @InjectRepository(ClientProfile)
+    private readonly clientProfileRepository: Repository<ClientProfile>,
+    @InjectRepository(ProviderProfile)
+    private readonly providerProfileRepository: Repository<ProviderProfile>,
   ) {}
 
   async findAll(
@@ -509,16 +515,47 @@ export class UsersService {
 
     console.log(`✅ Usuario ${userId} ahora tiene SOLO el rol "${roleName}"`);
 
-    // 5. Retornar el perfil correspondiente
+    // 5. Cargar el perfil correspondiente con TODAS sus relaciones
     let profile = null;
     let profileType: 'client' | 'provider' | 'none' = 'none';
 
     if (roleName === 'client') {
-      profile = user.clientProfile || null;
+      // Buscar clientProfile del usuario con la relación 'user'
+      profile = await this.clientProfileRepository.findOne({
+        where: { userId },
+        relations: ['user'],
+      });
+
       profileType = profile ? 'client' : 'none';
+      console.log(
+        `📦 Perfil familiar cargado:`,
+        profile ? `ID=${profile.id}` : 'NO existe',
+      );
     } else if (roleName === 'provider') {
-      profile = user.providerProfile || null;
+      // Buscar providerProfile del usuario con TODAS sus relaciones
+      // Incluye: user, services (ServiceConfig), variations y certificates
+      profile = await this.providerProfileRepository.findOne({
+        where: { userId },
+        relations: [
+          'user',
+          'services',                    // Cargar ServiceConfigs
+          'services.variations',         // Cargar ServiceVariations de cada servicio
+          'services.certificates',       // Cargar Certificates de cada servicio
+        ],
+      });
+
       profileType = profile ? 'provider' : 'none';
+      console.log(
+        `📦 Perfil profesional cargado:`,
+        profile ? `ID=${profile.id}` : 'NO existe',
+        profile?.services ? `con ${profile.services.length} servicios` : '',
+      );
+    }
+
+    if (!profile) {
+      console.log(
+        `⚠️ Usuario ${userId} no tiene perfil "${roleName}" - debe crearlo`,
+      );
     }
 
     return {
