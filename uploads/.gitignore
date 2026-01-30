@@ -1,0 +1,6 @@
+# Ignorar todos los archivos en esta carpeta
+*
+# Excepto este .gitignore
+!.gitignore
+# Y las subcarpetas (para que se creen en git)
+!*/

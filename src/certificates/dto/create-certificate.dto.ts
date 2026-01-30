@@ -47,12 +47,12 @@ export class CreateCertificateDto {
 
   @ApiProperty({
     description: 'Tipo de certificado',
-    enum: ['certification', 'reference', 'license', 'diploma'],
-    example: 'certification',
+    enum: ['experience', 'education', 'license', 'other'],
+    example: 'education',
   })
   @IsNotEmpty({ message: 'El tipo es obligatorio' })
   @IsString({ message: 'El tipo debe ser texto' })
-  @IsEnum(['certification', 'reference', 'license', 'diploma'], {
+  @IsEnum(['experience', 'education', 'license', 'other'], {
     message: 'Tipo inválido',
   })
   certificateType: string;

@@ -11,7 +11,14 @@ import {
   Req,
   ParseIntPipe,
   ValidationPipe,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 import {
   ApiTags,
   ApiOperation,
@@ -57,6 +64,84 @@ export class CertificatesController {
       createCertificateDto,
       req.user.userId,
     );
+  }
+
+  @Post('upload')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          const uploadPath = './uploads/certificates';
+          if (!existsSync(uploadPath)) {
+            mkdirSync(uploadPath, { recursive: true });
+          }
+          cb(null, uploadPath);
+        },
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.match(/\/(pdf|jpeg|jpg|png)$/)) {
+          return cb(
+            new BadRequestException(
+              'Solo se permiten archivos PDF, JPG, JPEG o PNG',
+            ),
+            false,
+          );
+        }
+        cb(null, true);
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+      },
+    }),
+  )
+  @ApiOperation({
+    summary: 'Subir archivo de certificado',
+    description:
+      'Sube un archivo (PDF, JPG, PNG) para un certificado. Máximo 5MB.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Archivo subido exitosamente',
+    schema: {
+      properties: {
+        message: { type: 'string' },
+        data: {
+          type: 'object',
+          properties: {
+            fileName: { type: 'string' },
+            filePath: { type: 'string' },
+            fileUrl: { type: 'string' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Archivo inválido' })
+  @ApiResponse({ status: 401, description: 'No autenticado' })
+  uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
+    if (!file) {
+      throw new BadRequestException('No se proporcionó ningún archivo');
+    }
+
+    const fileUrl = `/uploads/certificates/${file.filename}`;
+
+    return {
+      message: 'Archivo subido exitosamente',
+      data: {
+        fileName: file.originalname,
+        filePath: file.path,
+        fileUrl: fileUrl,
+      },
+    };
   }
 
   @Get()
