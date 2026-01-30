@@ -99,14 +99,13 @@ export class CertificatesController {
         cb(null, true);
       },
       limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB
+        fileSize: Number(process.env.MAX_CERTIFICATE_SIZE_MB || 5) * 1024 * 1024,
       },
     }),
   )
   @ApiOperation({
     summary: 'Subir archivo de certificado',
-    description:
-      'Sube un archivo (PDF, JPG, PNG) para un certificado. Máximo 5MB.',
+    description: `Sube un archivo (PDF, JPG, PNG) para un certificado. Máximo ${process.env.MAX_CERTIFICATE_SIZE_MB || 5}MB.`,
   })
   @ApiResponse({
     status: 201,
