@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProviderProfile } from '../entities/provider-profile.entity';
 import { User } from '../entities/user.entity';
+import { ServiceConfig } from '../entities/service-config.entity';
+import { Certificate } from '../entities/certificate.entity';
 import { CreateProviderProfileDto } from './dto/create-provider-profile.dto';
 import { UpdateProviderProfileDto } from './dto/update-provider-profile.dto';
 import { ProviderProfileFiltersDto } from './dto/provider-profile-filters.dto';
@@ -19,6 +21,10 @@ export class ProviderProfilesService {
     private readonly providerProfileRepository: Repository<ProviderProfile>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(ServiceConfig)
+    private readonly serviceConfigRepository: Repository<ServiceConfig>,
+    @InjectRepository(Certificate)
+    private readonly certificateRepository: Repository<Certificate>,
   ) {}
 
   /**
@@ -201,9 +207,15 @@ export class ProviderProfilesService {
       throw new NotFoundException(`Perfil de proveedor con ID ${id} no encontrado`);
     }
 
+    // Obtener estadísticas de certificados
+    const certificatesStats = await this.getCertificatesStats(id);
+
     return {
       message: 'Perfil de proveedor encontrado',
-      data: profile,
+      data: {
+        ...profile,
+        certificatesStats,
+      },
     };
   }
 
@@ -222,9 +234,15 @@ export class ProviderProfilesService {
       );
     }
 
+    // Obtener estadísticas de certificados
+    const certificatesStats = await this.getCertificatesStats(profile.id);
+
     return {
       message: 'Perfil de proveedor encontrado',
-      data: profile,
+      data: {
+        ...profile,
+        certificatesStats,
+      },
     };
   }
 
@@ -371,6 +389,66 @@ export class ProviderProfilesService {
       meta: {
         total: providers.length,
       },
+    };
+  }
+
+  /**
+   * Método auxiliar: Obtener estadísticas de certificados para todas las configuraciones de servicios
+   * de un perfil de proveedor
+   */
+  private async getCertificatesStats(profileId: number) {
+    // Obtener todos los service configs del proveedor
+    const serviceConfigs = await this.serviceConfigRepository.find({
+      where: { providerId: profileId },
+      select: ['id'],
+    });
+
+    if (serviceConfigs.length === 0) {
+      return {
+        totalCertificates: 0,
+        maxLimit: Number(process.env.MAX_CERTIFICATES_PER_USER || 10),
+        remaining: Number(process.env.MAX_CERTIFICATES_PER_USER || 10),
+        canUploadMore: true,
+        byServiceConfig: [],
+      };
+    }
+
+    const serviceConfigIds = serviceConfigs.map(sc => sc.id);
+
+    // Contar certificados agrupados por serviceConfigId
+    const certificateCounts = await this.certificateRepository
+      .createQueryBuilder('certificate')
+      .select('certificate.serviceConfigId', 'serviceConfigId')
+      .addSelect('COUNT(certificate.id)', 'count')
+      .where('certificate.serviceConfigId IN (:...ids)', { ids: serviceConfigIds })
+      .groupBy('certificate.serviceConfigId')
+      .getRawMany();
+
+    const maxLimit = Number(process.env.MAX_CERTIFICATES_PER_USER || 10);
+    const totalCertificates = certificateCounts.reduce((sum, item) => sum + Number(item.count), 0);
+
+    // Crear detalle por serviceConfig
+    const byServiceConfig = serviceConfigs.map(sc => {
+      const countData = certificateCounts.find(cc => cc.serviceConfigId === sc.id);
+      const count = countData ? Number(countData.count) : 0;
+      return {
+        serviceConfigId: sc.id,
+        count,
+        maxLimit,
+        remaining: Math.max(0, maxLimit - count),
+        canUploadMore: count < maxLimit,
+      };
+    });
+
+    // Calcular promedio/total
+    const avgRemaining = Math.floor(byServiceConfig.reduce((sum, item) => sum + item.remaining, 0) / serviceConfigs.length);
+
+    return {
+      totalCertificates,
+      maxLimit,
+      remaining: avgRemaining,
+      canUploadMore: byServiceConfig.some(item => item.canUploadMore),
+      byServiceConfig,
     };
   }
 }

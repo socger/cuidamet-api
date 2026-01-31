@@ -170,6 +170,34 @@ export class CertificatesController {
     return this.certificatesService.findByServiceConfig(serviceConfigId);
   }
 
+  @Get('service-config/:serviceConfigId/limit')
+  @ApiOperation({
+    summary: 'Verificar límite de certificados',
+    description: 'Obtiene información sobre el límite de certificados para una configuración de servicio.',
+  })
+  @ApiParam({
+    name: 'serviceConfigId',
+    description: 'ID de la configuración de servicio',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Información del límite obtenida',
+    schema: {
+      properties: {
+        canUpload: { type: 'boolean', example: true },
+        currentCount: { type: 'number', example: 3 },
+        maxLimit: { type: 'number', example: 10 },
+        remaining: { type: 'number', example: 7 },
+      },
+    },
+  })
+  async checkLimit(
+    @Param('serviceConfigId', ParseIntPipe) serviceConfigId: number,
+  ) {
+    return this.certificatesService.canUploadMoreCertificates(serviceConfigId);
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Obtener certificado por ID',

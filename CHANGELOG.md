@@ -8,6 +8,25 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- **Sistema de Límite de Certificados por Usuario**
+  - **Variable de entorno**: `MAX_CERTIFICATES_PER_USER` (por defecto: 10)
+  - **Validación automática**: Se valida el límite al crear certificados
+  - **Mensaje informativo**: Se notifica al usuario cuando alcanza el límite con información detallada
+  - **Contador en perfiles**: Los perfiles de proveedor incluyen estadísticas de certificados
+    - Total de certificados por service config
+    - Límite máximo configurado
+    - Certificados restantes disponibles
+    - Indicador `canUploadMore` por service config
+  - **Actualización automática**: El contador se actualiza al subir o eliminar certificados
+  - **Endpoint de verificación**: `GET /v1/certificates/service-config/:id/limit`
+  - **Archivos modificados**:
+    - `.env` y `.env.example` - Nueva variable `MAX_CERTIFICATES_PER_USER`
+    - `src/certificates/certificates.service.ts` - Métodos `countByServiceConfig()`, `canUploadMoreCertificates()`
+    - `src/certificates/certificates.controller.ts` - Nuevo endpoint `checkLimit()`
+    - `src/provider-profiles/provider-profiles.service.ts` - Método `getCertificatesStats()`
+    - `src/provider-profiles/provider-profiles.module.ts` - Imports de Certificate y ServiceConfig
+  - **Beneficio**: Control centralizado del número de certificados, evita spam y abuso del sistema
+
 - **Endpoint de Cambio de Rol Activo** - Nuevo endpoint para alternar entre perfiles cliente y proveedor
   - **Endpoint**: `PATCH /v1/users/:userId/active-role`
   - **Body**: `{ "roleName": "client" | "provider" }`

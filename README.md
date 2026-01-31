@@ -232,12 +232,17 @@ CORS_METHODS=GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS
 MAIL_HOST=localhost
 MAIL_PORT=1025
 APP_URL=http://localhost:3000
+
+# File Upload (Subida de archivos)
+MAX_CERTIFICATE_SIZE_MB=5            # Tamaño máximo por archivo (MB)
+MAX_CERTIFICATES_PER_USER=10         # Límite de certificados por usuario
 ```
 
 **Importante:**
 - Cambia `tu_password`, `tu_jwt_secret`, etc. por valores seguros
 - Para CORS en producción, usa solo tus dominios reales: `CORS_ORIGIN=https://tuapp.com`
 - **NUNCA** uses `CORS_ORIGIN=*` en producción
+- Ajusta `MAX_CERTIFICATES_PER_USER` según tus necesidades de negocio
 
 ### **4. Levantar contenedores Docker**
 ```bash
