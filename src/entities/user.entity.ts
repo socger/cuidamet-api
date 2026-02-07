@@ -29,6 +29,28 @@ export class User extends BaseEntity {
   @Column({ name: 'email_verified', default: false })
   emailVerified: boolean;
 
+  // Campos comunes de perfil (movidos desde provider_profiles y client_profiles)
+  @Column({ length: 15, nullable: true })
+  phone: string;
+
+  @Column({ name: 'photo_url', type: 'mediumtext', nullable: true })
+  photoUrl: string;
+
+  @Column({ length: 255, nullable: true })
+  location: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
+  latitude: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
+  longitude: number;
+
+  @Column({ type: 'simple-array', nullable: true })
+  languages: string[];
+
+  @Column({ name: 'is_premium', default: false })
+  isPremium: boolean;
+
   @ManyToMany(() => Role, (role) => role.users)
   @JoinTable({
     name: 'user_roles',

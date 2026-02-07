@@ -93,13 +93,15 @@ export class ProviderProfilesService {
       sortOrder = 'DESC',
     } = filters;
 
-    const queryBuilder = this.providerProfileRepository.createQueryBuilder('provider');
+    const queryBuilder = this.providerProfileRepository
+      .createQueryBuilder('provider')
+      .leftJoinAndSelect('provider.user', 'user');
 
     // Búsqueda general
     if (search) {
       queryBuilder.andWhere(
-        '(provider.location LIKE :search OR ' +
-          'provider.languages LIKE :search OR ' +
+        '(user.location LIKE :search OR ' +
+          'user.languages LIKE :search OR ' +
           'provider.verifications LIKE :search OR ' +
           'provider.badges LIKE :search)',
         { search: `%${search}%` },
@@ -108,13 +110,13 @@ export class ProviderProfilesService {
 
     // Filtros específicos
     if (location) {
-      queryBuilder.andWhere('provider.location LIKE :location', {
+      queryBuilder.andWhere('user.location LIKE :location', {
         location: `%${location}%`,
       });
     }
 
     if (language) {
-      queryBuilder.andWhere('provider.languages LIKE :language', {
+      queryBuilder.andWhere('user.languages LIKE :language', {
         language: `%${language}%`,
       });
     }
@@ -132,7 +134,7 @@ export class ProviderProfilesService {
     }
 
     if (typeof isPremium === 'boolean') {
-      queryBuilder.andWhere('provider.isPremium = :isPremium', {
+      queryBuilder.andWhere('user.isPremium = :isPremium', {
         isPremium: isPremium ? 1 : 0,
       });
     }
@@ -311,14 +313,15 @@ export class ProviderProfilesService {
     // Fórmula Haversine para calcular distancia
     const query = this.providerProfileRepository
       .createQueryBuilder('provider')
-      .where('provider.latitude IS NOT NULL')
-      .andWhere('provider.longitude IS NOT NULL')
+      .leftJoinAndSelect('provider.user', 'user')
+      .where('user.latitude IS NOT NULL')
+      .andWhere('user.longitude IS NOT NULL')
       .andWhere('provider.profileStatus = :status', { status: 'published' })
       .select([
         'provider.*',
-        `(6371 * acos(cos(radians(:lat)) * cos(radians(provider.latitude)) * 
-         cos(radians(provider.longitude) - radians(:lng)) + 
-         sin(radians(:lat)) * sin(radians(provider.latitude)))) AS distance`,
+        `(6371 * acos(cos(radians(:lat)) * cos(radians(user.latitude)) * 
+         cos(radians(user.longitude) - radians(:lng)) + 
+         sin(radians(:lat)) * sin(radians(user.latitude)))) AS distance`,
       ])
       .having('distance <= :radius')
       .orderBy('distance', 'ASC')
@@ -371,17 +374,18 @@ export class ProviderProfilesService {
    * Buscar proveedores premium
    */
   async findPremium(limit: number = 10) {
-    const providers = await this.providerProfileRepository.find({
-      where: {
-        isPremium: true,
+    const queryBuilder = this.providerProfileRepository
+      .createQueryBuilder('providerProfile')
+      .leftJoinAndSelect('providerProfile.user', 'user')
+      .where('user.isPremium = :isPremium', { isPremium: true })
+      .andWhere('providerProfile.profileStatus = :profileStatus', {
         profileStatus: 'published',
-      },
-      order: {
-        rating: 'DESC',
-        completedBookings: 'DESC',
-      },
-      take: limit,
-    });
+      })
+      .orderBy('providerProfile.rating', 'DESC')
+      .addOrderBy('providerProfile.completedBookings', 'DESC')
+      .take(limit);
+
+    const providers = await queryBuilder.getMany();
 
     return {
       message: `${providers.length} proveedores premium encontrados`,

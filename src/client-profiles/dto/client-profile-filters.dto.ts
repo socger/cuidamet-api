@@ -11,7 +11,7 @@ import { Type, Transform } from 'class-transformer';
 
 export class ClientProfileFiltersDto {
   @ApiPropertyOptional({
-    description: 'Búsqueda general (email, ubicación)',
+    description: 'Búsqueda general (ubicación e email del usuario)',
     example: 'María',
   })
   @IsOptional()
@@ -19,7 +19,7 @@ export class ClientProfileFiltersDto {
   search?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrar por ubicación',
+    description: 'Filtrar por ubicación del usuario',
     example: 'Madrid',
   })
   @IsOptional()
@@ -27,7 +27,7 @@ export class ClientProfileFiltersDto {
   location?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrar por idioma',
+    description: 'Filtrar por idioma del usuario',
     example: 'Español',
   })
   @IsOptional()
@@ -53,7 +53,7 @@ export class ClientProfileFiltersDto {
   profileStatus?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrar por suscripción premium',
+    description: 'Filtrar por suscripción premium del usuario',
     example: false,
   })
   @IsOptional()

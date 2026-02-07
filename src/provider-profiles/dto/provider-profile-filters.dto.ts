@@ -12,7 +12,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ProviderProfileFiltersDto {
   @ApiPropertyOptional({
-    description: 'Búsqueda general en ubicación, idiomas, verificaciones y badges',
+    description: 'Búsqueda general en ubicación e idiomas del usuario, verificaciones y badges del perfil',
     example: 'Madrid',
   })
   @IsOptional()
@@ -20,7 +20,7 @@ export class ProviderProfileFiltersDto {
   search?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrar por ubicación (búsqueda parcial)',
+    description: 'Filtrar por ubicación del usuario (búsqueda parcial)',
     example: 'Madrid',
   })
   @IsOptional()
@@ -28,7 +28,7 @@ export class ProviderProfileFiltersDto {
   location?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrar por idioma específico',
+    description: 'Filtrar por idioma del usuario',
     example: 'Español',
   })
   @IsOptional()
@@ -53,7 +53,7 @@ export class ProviderProfileFiltersDto {
   profileStatus?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrar por suscripción premium',
+    description: 'Filtrar por suscripción premium del usuario',
     example: true,
   })
   @IsOptional()

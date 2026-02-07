@@ -19,53 +19,8 @@ export class ProviderProfile extends BaseEntity {
   @ApiProperty({ description: 'ID del usuario', example: 1 })
   userId: number;
 
-  @Column({ length: 15, nullable: true })
-  @ApiProperty({ 
-    description: 'Número de teléfono', 
-    example: '+34612345678',
-    required: false 
-  })
-  phone: string;
-
-  @Column({ name: 'photo_url', type: 'text', nullable: true })
-  @ApiProperty({ 
-    description: 'URL de la foto de perfil', 
-    example: 'https://example.com/photos/provider123.jpg',
-    required: false 
-  })
-  photoUrl: string;
-
-  @Column({ length: 255 })
-  @ApiProperty({ 
-    description: 'Ubicación del proveedor', 
-    example: 'Madrid, España' 
-  })
-  location: string;
-
-  @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
-  @ApiProperty({ 
-    description: 'Latitud de la ubicación', 
-    example: 40.4168,
-    required: false 
-  })
-  latitude: number;
-
-  @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
-  @ApiProperty({ 
-    description: 'Longitud de la ubicación', 
-    example: -3.7038,
-    required: false 
-  })
-  longitude: number;
-
-  @Column({ type: 'simple-array', nullable: true })
-  @ApiProperty({ 
-    description: 'Idiomas que habla el proveedor', 
-    example: ['Español', 'Inglés'],
-    type: [String],
-    required: false 
-  })
-  languages: string[];
+  // NOTA: Los campos phone, photoUrl, location, latitude, longitude, languages e isPremium
+  // han sido movidos a la entidad User para evitar duplicación entre perfiles
 
   @Column({ type: 'simple-array', nullable: true })
   @ApiProperty({ 
@@ -85,13 +40,7 @@ export class ProviderProfile extends BaseEntity {
   })
   profileStatus: string;
 
-  @Column({ name: 'is_premium', default: false })
-  @ApiProperty({ 
-    description: 'Indica si el proveedor tiene suscripción premium', 
-    example: false,
-    default: false 
-  })
-  isPremium: boolean;
+  // NOTA: El campo isPremium ha sido movido a la entidad User
 
   @Column({ name: 'provider_status', default: 'offline' })
   @ApiProperty({ 

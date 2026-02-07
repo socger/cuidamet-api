@@ -82,20 +82,20 @@ export class ClientProfilesService {
     // Búsqueda general
     if (search) {
       query.andWhere(
-        '(profile.location LIKE :search OR user.email LIKE :search)',
+        '(user.location LIKE :search OR user.email LIKE :search)',
         { search: `%${search}%` },
       );
     }
 
     // Filtros específicos
     if (location) {
-      query.andWhere('profile.location LIKE :location', {
+      query.andWhere('user.location LIKE :location', {
         location: `%${location}%`,
       });
     }
 
     if (language) {
-      query.andWhere('profile.languages LIKE :language', {
+      query.andWhere('user.languages LIKE :language', {
         language: `%${language}%`,
       });
     }
@@ -114,7 +114,7 @@ export class ClientProfilesService {
 
     if (isPremium !== undefined) {
       // Convertir booleano a número para MySQL (0 o 1)
-      query.andWhere('profile.isPremium = :isPremium', { 
+      query.andWhere('user.isPremium = :isPremium', { 
         isPremium: isPremium ? 1 : 0 
       });
     }
@@ -238,18 +238,19 @@ export class ClientProfilesService {
   ): Promise<ClientProfile[]> {
     // Fórmula Haversine para calcular distancia
     const query = `
-      SELECT *, 
+      SELECT cp.*, u.*, 
         (6371 * acos(
           cos(radians(?)) * 
-          cos(radians(latitude)) * 
-          cos(radians(longitude) - radians(?)) + 
+          cos(radians(u.latitude)) * 
+          cos(radians(u.longitude) - radians(?)) + 
           sin(radians(?)) * 
-          sin(radians(latitude))
+          sin(radians(u.latitude))
         )) AS distance
-      FROM client_profiles
-      WHERE latitude IS NOT NULL 
-        AND longitude IS NOT NULL
-        AND profile_status = 'published'
+      FROM client_profiles cp
+      INNER JOIN users u ON cp.user_id = u.id
+      WHERE u.latitude IS NOT NULL 
+        AND u.longitude IS NOT NULL
+        AND cp.profile_status = 'published'
       HAVING distance < ?
       ORDER BY distance
     `;

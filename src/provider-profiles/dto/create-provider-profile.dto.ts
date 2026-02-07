@@ -25,69 +25,8 @@ export class CreateProviderProfileDto {
   @IsNumber({}, { message: 'El ID del usuario debe ser un número' })
   userId: number;
 
-  @ApiPropertyOptional({
-    description: 'Número de teléfono del proveedor',
-    example: '+34612345678',
-    maxLength: 15,
-  })
-  @IsOptional()
-  @IsString({ message: 'El teléfono debe ser texto' })
-  @MaxLength(15, { message: 'El teléfono no puede exceder 15 caracteres' })
-  phone?: string;
-
-  @ApiPropertyOptional({
-    description: 'URL de la foto de perfil o imagen en base64',
-    example: 'https://example.com/photos/provider123.jpg',
-    maxLength: 10485760,
-  })
-  @IsOptional()
-  @IsString({ message: 'La URL de la foto debe ser texto' })
-  @MaxLength(10485760, { message: 'La foto no puede exceder 10MB' })
-  photoUrl?: string;
-
-  @ApiProperty({
-    description: 'Ubicación del proveedor (dirección o ciudad)',
-    example: 'Madrid, España',
-    maxLength: 255,
-  })
-  @IsNotEmpty({ message: 'La ubicación es obligatoria' })
-  @IsString({ message: 'La ubicación debe ser texto' })
-  @MaxLength(255, { message: 'La ubicación no puede exceder 255 caracteres' })
-  location: string;
-
-  @ApiPropertyOptional({
-    description: 'Latitud de la ubicación (-90 a 90)',
-    example: 40.4168,
-    minimum: -90,
-    maximum: 90,
-  })
-  @IsOptional()
-  @IsNumber({}, { message: 'La latitud debe ser un número' })
-  @IsLatitude({ message: 'La latitud debe estar entre -90 y 90' })
-  latitude?: number;
-
-  @ApiPropertyOptional({
-    description: 'Longitud de la ubicación (-180 a 180)',
-    example: -3.7038,
-    minimum: -180,
-    maximum: 180,
-  })
-  @IsOptional()
-  @IsNumber({}, { message: 'La longitud debe ser un número' })
-  @IsLongitude({ message: 'La longitud debe estar entre -180 y 180' })
-  longitude?: number;
-
-  @ApiPropertyOptional({
-    description: 'Idiomas que habla el proveedor (máximo 10)',
-    example: ['Español', 'Inglés', 'Francés'],
-    type: [String],
-    maxItems: 10,
-  })
-  @IsOptional()
-  @IsArray({ message: 'Los idiomas deben ser un array' })
-  @IsString({ each: true, message: 'Cada idioma debe ser texto' })
-  @ArrayMaxSize(10, { message: 'No se pueden agregar más de 10 idiomas' })
-  languages?: string[];
+  // NOTA: Los campos phone, photoUrl, location, latitude, longitude, languages e isPremium
+  // han sido movidos a la entidad User y deben gestionarse allí
 
   @ApiPropertyOptional({
     description: 'Disponibilidad general del proveedor',
@@ -116,14 +55,7 @@ export class CreateProviderProfileDto {
   })
   profileStatus?: string;
 
-  @ApiPropertyOptional({
-    description: 'Indica si el proveedor tiene suscripción premium',
-    example: false,
-    default: false,
-  })
-  @IsOptional()
-  @IsBoolean({ message: 'isPremium debe ser verdadero o falso' })
-  isPremium?: boolean;
+  // NOTA: El campo isPremium se gestiona ahora en la entidad User
 
   @ApiPropertyOptional({
     description: 'Estado de disponibilidad del proveedor (available, busy, offline)',
