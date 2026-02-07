@@ -125,6 +125,14 @@ export class AuthController {
     description:
       'Crear una nueva cuenta de usuario. El email y username deben ser únicos.',
   })
+  @ApiHeader({
+    name: 'user-agent',
+    required: true,
+    description: 'User agent del navegador (requerido para identificar el dispositivo)',
+    schema: {
+      example: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0',
+    },
+  })
   @ApiResponse({
     status: 201,
     description: 'Usuario registrado exitosamente',
