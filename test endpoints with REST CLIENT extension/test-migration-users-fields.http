@@ -1,0 +1,323 @@
+### =========================================
+### Test - Migración Campos de Perfiles a Users
+### =========================================
+### Este archivo contiene tests para verificar que los campos
+### phone, photo_url, location, latitude, longitude, languages, is_premium
+### funcionan correctamente en la tabla users después de la migración
+### =========================================
+
+### Variables
+@baseUrl = http://localhost:3000
+@apiVersion = v1
+
+### 1. Login - Obtener token de acceso
+POST {{baseUrl}}/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@socgerfleet.com",
+  "password": "admin123"
+}
+
+### Extraer token (guarda manualmente el accessToken de la respuesta anterior)
+@accessToken = <PASTE_TOKEN_HERE>
+
+### =========================================
+### TESTS - USUARIOS (tabla users con campos migrados)
+### =========================================
+
+### 2. Actualizar usuario con campos migrados
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "phone": "+34600123456",
+  "location": "Madrid, España",
+  "latitude": 40.416775,
+  "longitude": -3.703790,
+  "languages": ["Español", "Inglés", "Francés"],
+  "isPremium": true
+}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ Respuesta incluye todos los campos actualizados
+### ✅ No hay errores de validación
+
+### 3. Obtener usuario individual con campos migrados
+GET {{baseUrl}}/{{apiVersion}}/users/1
+Authorization: Bearer {{accessToken}}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ data.phone = "+34600123456"
+### ✅ data.location = "Madrid, España"
+### ✅ data.latitude = 40.416775
+### ✅ data.longitude = -3.703790
+### ✅ data.languages = ["Español", "Inglés", "Francés"]
+### ✅ data.isPremium = true
+
+### 4. Listar usuarios con campos migrados
+GET {{baseUrl}}/{{apiVersion}}/users?page=1&limit=5
+Authorization: Bearer {{accessToken}}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ Cada usuario incluye: phone, photoUrl, location, latitude, longitude, languages, isPremium
+### ✅ Valores null se manejan correctamente
+
+### 5. Actualizar solo phone
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "phone": "+34655112233"
+}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ Solo phone se actualiza, otros campos permanecen igual
+
+### 6. Actualizar solo ubicación
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "location": "Barcelona, España",
+  "latitude": 41.385064,
+  "longitude": 2.173404
+}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ Ubicación actualizada correctamente
+
+### 7. Actualizar solo idiomas
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "languages": ["Español", "Catalán", "Inglés", "Alemán"]
+}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ Array de idiomas actualizado correctamente
+
+### 8. Actualizar solo isPremium
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "isPremium": false
+}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ isPremium cambiado a false
+
+### 9. Actualizar photoUrl (base64 pequeño de prueba)
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "photoUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ photoUrl guardado correctamente (MEDIUMTEXT soporta hasta 16MB)
+
+### 10. Búsqueda rápida de usuarios
+GET {{baseUrl}}/{{apiVersion}}/users/search?q=admin&limit=5
+Authorization: Bearer {{accessToken}}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ Resultados incluyen campos migrados
+
+### =========================================
+### TESTS - PROVIDER PROFILES (relación con users)
+### =========================================
+
+### 11. Listar provider profiles (verifica que incluya user.*)
+GET {{baseUrl}}/{{apiVersion}}/provider-profiles?page=1&limit=3
+Authorization: Bearer {{accessToken}}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ Cada providerProfile.user incluye: phone, photoUrl, location, latitude, longitude, languages, isPremium
+### ✅ Los datos vienen de la tabla users, no de provider_profiles
+
+### 12. Buscar proveedores premium
+GET {{baseUrl}}/{{apiVersion}}/provider-profiles/premium?limit=10
+Authorization: Bearer {{accessToken}}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ Query busca en user.isPremium = true (JOIN a tabla users)
+### ✅ No hay errores de compilación (campo no existe en provider_profiles)
+### Nota: Puede devolver 0 resultados si ningún usuario tiene isPremium=true
+
+### 13. Obtener provider profile individual
+GET {{baseUrl}}/{{apiVersion}}/provider-profiles/1
+Authorization: Bearer {{accessToken}}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ providerProfile.user incluye todos los campos migrados
+
+### =========================================
+### TESTS - CLIENT PROFILES (relación con users)
+### =========================================
+
+### 14. Listar client profiles
+GET {{baseUrl}}/{{apiVersion}}/client-profiles?page=1&limit=3
+Authorization: Bearer {{accessToken}}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ Cada clientProfile.user incluye campos migrados
+### ✅ Los datos vienen de users, no de client_profiles
+
+### 15. Obtener client profile individual
+GET {{baseUrl}}/{{apiVersion}}/client-profiles/1
+Authorization: Bearer {{accessToken}}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ clientProfile.user incluye phone, location, etc.
+
+### =========================================
+### TESTS DE VALIDACIÓN
+### =========================================
+
+### 16. Error: phone con formato inválido (más de 15 caracteres)
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "phone": "+34600123456789012345"
+}
+
+### Resultado Esperado:
+### ✅ Status 400
+### ✅ Error de validación: "phone must not be longer than 15 characters"
+
+### 17. Error: latitude fuera de rango
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "latitude": 95.0
+}
+
+### Resultado Esperado:
+### ✅ Status 400
+### ✅ Error de validación: "latitude must be a latitude string or number"
+
+### 18. Error: longitude fuera de rango
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "longitude": 200.0
+}
+
+### Resultado Esperado:
+### ✅ Status 400
+### ✅ Error de validación: "longitude must be a longitude string or number"
+
+### 19. Error: languages no es array
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "languages": "Español"
+}
+
+### Resultado Esperado:
+### ✅ Status 400
+### ✅ Error de validación: "languages must be an array"
+
+### 20. Error: languages supera máximo de 10 elementos
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "languages": ["Español", "Inglés", "Francés", "Alemán", "Italiano", "Portugués", "Ruso", "Chino", "Japonés", "Árabe", "Coreano"]
+}
+
+### Resultado Esperado:
+### ✅ Status 400
+### ✅ Error de validación: "languages must contain no more than 10 elements"
+
+### 21. Error: isPremium no es booleano
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "isPremium": "yes"
+}
+
+### Resultado Esperado:
+### ✅ Status 400
+### ✅ Error de validación: "isPremium must be a boolean value"
+
+### =========================================
+### CLEANUP - Resetear datos de prueba
+### =========================================
+
+### 22. Resetear usuario a valores por defecto
+PATCH {{baseUrl}}/{{apiVersion}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "phone": null,
+  "photoUrl": null,
+  "location": null,
+  "latitude": null,
+  "longitude": null,
+  "languages": null,
+  "isPremium": false
+}
+
+### Resultado Esperado:
+### ✅ Status 200
+### ✅ Todos los campos limpiados correctamente
+
+### =========================================
+### NOTAS DE VERIFICACIÓN
+### =========================================
+###
+### ✅ VERIFICADO:
+### - UpdateUserDto acepta los 7 nuevos campos
+### - PATCH /v1/users/:id actualiza correctamente
+### - GET /v1/users/:id devuelve campos migrados
+### - GET /v1/users listado incluye campos
+### - GET /v1/provider-profiles incluye user.* con campos
+### - GET /v1/provider-profiles/premium busca en user.isPremium
+### - Validaciones funcionan correctamente
+### - Tipos de datos se convierten correctamente (DECIMAL, TEXT, TINYINT)
+### - Arrays JSON se manejan correctamente
+###
+### 📋 CAMBIOS APLICADOS:
+### - user.entity.ts: 7 columnas con TypeORM decorators
+### - update-user.dto.ts: Clase standalone con 8 campos opcionales
+### - users.service.ts: 4 métodos actualizados (findAll, findOne, search, findOneWithProfiles)
+### - provider-profiles.service.ts: findPremium() usa QueryBuilder con JOIN
+###
+### =========================================
