@@ -68,6 +68,9 @@ export class AuthController {
     name: 'user-agent',
     required: true,
     description: 'User agent del navegador (requerido para identificar el dispositivo)',
+    schema: {
+      example: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0',
+    },
   })
   @ApiResponse({
     status: 200,
@@ -80,7 +83,7 @@ export class AuthController {
         user: {
           id: 1,
           username: 'admin',
-          email: 'admin@socgerfleet.com',
+          email: 'admin@cuidamet.com',
           roles: ['admin'],
         },
       },
