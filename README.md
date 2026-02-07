@@ -15,30 +15,35 @@
 ## ⚡ Inicio Rápido
 
 ```bash
-# 1. Clonar e instalar (con versiones exactas)
+# 1. Clonar el repositorio
 git clone <tu-repositorio>
-cd socgerfleet && npm ci
+cd cuidamet-api
 
-# 2. Configurar
+# 2. Instalar dependencias
+npm install
+# O de forma abreviada: npm i
+
+# 3. Configurar variables de entorno
 cp .env.example .env
-# Edita .env con tus credenciales
+# Edita .env con tus credenciales de base de datos
 
-# 3. Levantar base de datos
+# 4. Levantar contenedor Docker con MySQL
 docker compose up -d
 
-# 4. Ejecutar migraciones
+# 5. Ejecutar migraciones (crea toda la estructura de BD)
 npm run migration:run
 
-# 5. (Opcional) Poblar datos de prueba
+# 6. (Opcional) Poblar datos de prueba
 npm run seed:run
 
-# 6. Iniciar servidor
+# 7. Iniciar servidor en modo desarrollo
 npm run start:dev
 
-# 7. Abrir Swagger: http://localhost:3000/api/docs
+# 8. Abrir Swagger (Documentación interactiva)
+# http://localhost:3000/api/docs
 ```
 
-> **💡 Tip**: Usa `npm ci` en lugar de `npm install` para instalación reproducible con versiones exactas.
+> **💡 Nota**: Las migraciones de TypeORM crean automáticamente todas las tablas, índices, relaciones y datos iniciales (roles y usuario admin). No necesitas scripts SQL manuales.
 
 **Pruebas de Seguridad:**
 ```bash
@@ -160,45 +165,28 @@ src/
 ### **1. Clonar el repositorio**
 ```bash
 git clone <tu-repositorio>
-cd socgerfleet
+cd cuidamet-api
 ```
 
 ### **2. Instalar dependencias**
 
-#### 🏠 **Para Desarrollo (instalación limpia con versiones exactas)**
 ```bash
-npm ci
+npm install
+# O de forma abreviada: npm i
 ```
 
 Este comando:
-- ✅ Instala **versiones exactas** de `package-lock.json`
-- ✅ Garantiza que todos los desarrolladores tengan las mismas versiones
-- ✅ Es más rápido que `npm install`
-- ✅ Elimina `node_modules` antes de instalar (instalación limpia)
+- ✅ Instala todas las dependencias del proyecto
+- ✅ Lee versiones desde `package.json`
+- ✅ Crea/actualiza `package-lock.json`
 
-#### 🔧 **Para agregar nuevas dependencias (solo cuando sea necesario)**
+#### **Para Producción (opcional)**
 ```bash
-# Agregar una nueva dependencia
-npm install nombre-paquete
-
-# Actualizar dependencias existentes (dentro de rangos permitidos)
-npm update
+npm install --production
+# Solo instala dependencias de producción (omite devDependencies)
 ```
 
-#### 🚀 **Para Producción**
-```bash
-npm ci --only=production
-```
-
-Este comando:
-- ✅ Instala solo dependencias de producción (omite `devDependencies`)
-- ✅ Reduce el tamaño de `node_modules` significativamente
-- ✅ Más rápido y seguro para deployments
-
-> **⚠️ Importante**: 
-> - Usa `npm ci` en CI/CD, servidores y cuando clones el repositorio
-> - Usa `npm install` **solo** cuando agregues/actualices paquetes
-> - Siempre commitea `package-lock.json` al repositorio Git
+> **💡 Tip**: Si prefieres instalaciones reproducibles con versiones exactas, usa `npm ci` en lugar de `npm install`. Esto es útil en CI/CD y servidores.
 
 ### **3. Configurar variables de entorno**
 ```bash
@@ -212,12 +200,12 @@ DB_HOST=localhost
 DB_PORT=3306
 DB_USERNAME=socger
 DB_PASSWORD=tu_password
-DB_DATABASE=socgerfleet
+DB_DATABASE=cuidamet
 
 # JWT
-JWT_SECRET=tu_jwt_secret
+JWT_SECRET=tu_jwt_secret_muy_largo_y_seguro
 JWT_EXPIRES_IN=15m
-JWT_REFRESH_SECRET=tu_refresh_secret
+JWT_REFRESH_SECRET=tu_refresh_secret_diferente
 JWT_REFRESH_EXPIRES_IN=7d
 
 # App
@@ -244,43 +232,53 @@ MAX_CERTIFICATES_PER_USER=10         # Límite de certificados por usuario
 - **NUNCA** uses `CORS_ORIGIN=*` en producción
 - Ajusta `MAX_CERTIFICATES_PER_USER` según tus necesidades de negocio
 
-### **4. Levantar contenedores Docker**
+### **4. Levantar contenedor Docker con MySQL**
 ```bash
-  docker-compose up -d 
-ó el comando más moderno
-  docker compose up -d 
+docker compose up -d
 ```
 
-### **5. Ejecutar migraciones de base de datos**
+Este comando:
+- ✅ Inicia contenedor MySQL 8.0
+- ✅ Inicia phpMyAdmin (interfaz web para BD)
+- ✅ Crea la base de datos `cuidamet` (si no existe)
 
-⚠️ **IMPORTANTE**: Este proyecto usa migraciones TypeORM (synchronize: false).  
+> **💡 Nota**: El contenedor crea una base de datos **vacía**. Las migraciones de TypeORM crearán toda la estructura automáticamente en el siguiente paso.
+
+### **5. Ejecutar migraciones de TypeORM**
+
+⚠️ **IMPORTANTE**: Este proyecto usa migraciones TypeORM (`synchronize: false`).  
 Las migraciones son **OBLIGATORIAS** para crear/actualizar el esquema de la base de datos.
 
 ```bash
 npm run migration:run
 ```
 
-Si es la primera vez, esto creará las tablas con campos de auditoría:
-- `created_at`, `updated_at` - Timestamps automáticos
-- `deleted_at` - Para soft delete (borrado lógico)
-- `created_by`, `updated_by`, `deleted_by` - Auditoría de usuarios
+Esto creará automáticamente:
+- ✅ 13 tablas completas con índices y relaciones
+- ✅ Campos de auditoría (`created_at`, `updated_at`, `deleted_at`, etc.)
+- ✅ Campos para soft delete (borrado lógico recuperable)
+- ✅ 5 roles predefinidos (admin, user, moderator, provider, client)
+- ✅ Usuario admin inicial (admin@socgerfleet.com / admin123)
 
-### **6. (Opcional) Poblar base de datos con datos iniciales**
+📖 **Más información**: Ver [MIGRACIONES-INFO.md](MIGRACIONES-INFO.md) para detalles completos
+
+### **6. (Opcional) Poblar base de datos con datos de prueba**
 ```bash
 npm run seed:run
 ```
 
-Esto creará usuarios de prueba:
+Esto creará usuarios adicionales de prueba:
 - **admin@socgerfleet.com** (contraseña: Admin123!)
 - **moderator@socgerfleet.com** (contraseña: Moderator123!)
 - **user@socgerfleet.com** (contraseña: User123!)
 
 ### **7. Ejecutar la aplicación**
 ```bash
-# Desarrollo
+# Modo desarrollo (con auto-reload)
 npm run start:dev
 
-# Producción
+# Modo producción
+npm run build
 npm run start:prod
 ```
 
@@ -299,6 +297,9 @@ La aplicación estará disponible en:
 
 # Probar configuración CORS
 ./test-cors.sh
+
+# Probar rate limiting global
+./test-rate-limiting.sh
 ```
 
 ## 🗄️ Gestión de Base de Datos
