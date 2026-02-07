@@ -1,4 +1,20 @@
 -- ========================================
+-- ⛔ OBSOLETO - NO EJECUTAR
+-- ========================================
+-- Este script SQL fue reemplazado por una migración de TypeORM
+-- Archivo: src/database/migrations/1769200000000-AddProfileFieldsToUsers.ts
+--
+-- ⚠️ ESTE ARCHIVO NO DEBE USARSE
+-- Los scripts en docker/mysql/init/ solo se ejecutan al crear el contenedor
+-- y NO son migraciones apropiadas.
+--
+-- ✅ USAR EN SU LUGAR:
+-- npm run migration:run
+--
+-- Ver documentación completa en: MIGRACIONES-INFO.md
+-- ========================================
+
+-- ========================================
 -- Migración: Mover campos de perfiles a users
 -- Fecha: 2026-02-07
 -- Descripción: Mueve los campos phone, photo_url, location, latitude, longitude, 
