@@ -288,8 +288,9 @@ services:
 
 ### Inicialización de Base de Datos
 - **Archivo**: `docker/mysql/init/01_create_tables.sql`
-- **Función**: Crear tablas iniciales y datos de prueba
+- **Función**: Setup inicial del contenedor - Crear estructura base y datos de prueba
 - **Usuario admin predefinido**: admin@socgerfleet.com / admin123
+- **⚠️ IMPORTANTE**: Estos scripts SQL **NO son migraciones**. Solo se ejecutan cuando se crea el contenedor por primera vez. Para cambios evolutivos de la BD, usar **TypeORM Migrations** (ver sección "Sistema de Migraciones" en este documento).
 
 ## 🚀 Instalación y Configuración
 
@@ -518,6 +519,164 @@ Si creas endpoints GET con filtros, aplica este patrón a:
 - **Documentación completa**: [BOOLEAN-FILTERS-FIX.md](resources/documents/AI%20conversations/AI%20conversations%20-%20socgerFleet/035%20-%20BOOLEAN-FILTERS-FIX%20-%20Cambios%20necesarios%20para%20poder%20filtrar%20booleanos%20en%20las%20sql%20con%20type%20ORM.md)
 - **NestJS Serialization**: https://docs.nestjs.com/techniques/serialization
 - **Class Transformer**: https://github.com/typestack/class-transformer
+
+---
+
+### 🔴 CRÍTICO: Sistema de Migraciones de Base de Datos
+
+**REGLA FUNDAMENTAL: SIEMPRE usa TypeORM Migrations para cambios en la base de datos.**
+
+#### ❌ NO HACER - Scripts SQL Manuales
+
+**NUNCA crear archivos SQL en `docker/mysql/init/` para migraciones:**
+
+```bash
+# ❌ INCORRECTO - NO CREAR MÁS ARCHIVOS AQUÍ
+docker/mysql/init/
+  ├── 01_create_tables.sql          # Solo para setup inicial
+  ├── 02_move_profile_fields.sql    # ❌ MAL - Debió ser migración TypeORM
+  └── 03_nueva_tabla.sql            # ❌ MAL - NO HACER ESTO
+```
+
+**Problemas de los scripts SQL manuales:**
+- ❌ Solo se ejecutan cuando se crea el contenedor por primera vez
+- ❌ No hay tracking de qué migraciones se ejecutaron
+- ❌ No se pueden revertir automáticamente (`down()`)
+- ❌ No están versionadas con el código
+- ❌ Difíciles de sincronizar con cambios en entidades TypeScript
+- ❌ No funcionan en entornos de producción existentes
+
+#### ✅ HACER - TypeORM Migrations
+
+**SIEMPRE usa el sistema de migraciones de TypeORM/NestJS:**
+
+```bash
+# ✅ CORRECTO - Estructura del proyecto
+src/database/
+  ├── data-source.ts                      # Configuración de TypeORM
+  └── migrations/                         # Carpeta de migraciones
+      ├── 1737158400000-InitialSchema.ts  # Migración inicial
+      ├── 1768854380268-AddLoginAttempts.ts
+      ├── 1769160948978-AddProfileEntities.ts
+      └── [timestamp]-MiNuevaMigracion.ts # ✅ Crear aquí
+```
+
+#### Comandos de Migraciones
+
+```bash
+# 1. Crear migración vacía (para escribir manualmente)
+npm run migration:create src/database/migrations/MiNuevaMigracion
+
+# 2. Generar migración desde cambios en entidades (RECOMENDADO)
+npm run migration:generate src/database/migrations/AddNuevoCampo
+
+# 3. Ejecutar migraciones pendientes
+npm run migration:run
+
+# 4. Revertir última migración
+npm run migration:revert
+
+# 5. Ver estado de migraciones
+npm run migration:show
+```
+
+#### Estructura de una Migración TypeORM
+
+```typescript
+// src/database/migrations/1738972800000-AddPhoneToUsers.ts
+import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
+
+export class AddPhoneToUsers1738972800000 implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // APLICAR cambios
+    await queryRunner.addColumn('users', new TableColumn({
+      name: 'phone',
+      type: 'varchar',
+      length: '15',
+      isNullable: true,
+      comment: 'Número de teléfono del usuario'
+    }));
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    // REVERTIR cambios
+    await queryRunner.dropColumn('users', 'phone');
+  }
+}
+```
+
+#### Flujo de Trabajo para Cambios en BD
+
+1. **Modificar entidad TypeScript**:
+   ```typescript
+   // src/entities/user.entity.ts
+   @Column({ type: 'varchar', length: 15, nullable: true })
+   phone?: string;
+   ```
+
+2. **Generar migración automática**:
+   ```bash
+   npm run migration:generate src/database/migrations/AddPhoneToUsers
+   ```
+
+3. **Revisar migración generada** (TypeORM la crea automáticamente)
+
+4. **Ejecutar migración**:
+   ```bash
+   npm run migration:run
+   ```
+
+5. **Verificar en BD** (phpMyAdmin o MySQL Workbench)
+
+6. **Commit de la migración** junto con los cambios de código
+
+#### Casos Especiales
+
+**Migración de datos complejos:**
+```typescript
+public async up(queryRunner: QueryRunner): Promise<void> {
+  // 1. Agregar columnas
+  await queryRunner.addColumn('users', ...);
+  
+  // 2. Migrar datos existentes
+  await queryRunner.query(`
+    UPDATE users u
+    INNER JOIN provider_profiles pp ON u.id = pp.user_id
+    SET u.phone = pp.phone
+    WHERE u.phone IS NULL
+  `);
+  
+  // 3. Eliminar columnas antiguas
+  await queryRunner.dropColumn('provider_profiles', 'phone');
+}
+```
+
+#### Verificación de Estado
+
+```bash
+# Ver qué migraciones están pendientes/ejecutadas
+npm run migration:show
+
+# Salida esperada:
+✓ InitialSchema1737158400000
+✓ AddLoginAttempts1768854380268
+✓ AddProfileEntities1769160948978
+⬜ AddPhoneToUsers1738972800000  ← Pendiente
+```
+
+#### Referencias
+- **TypeORM Migrations**: https://typeorm.io/migrations
+- **NestJS Database**: https://docs.nestjs.com/techniques/database
+- **Configuración del proyecto**: [src/database/data-source.ts](src/database/data-source.ts)
+- **Scripts NPM**: Ver [package.json](package.json) líneas 21-25
+
+#### ⚠️ Nota sobre `docker/mysql/init/`
+
+Los archivos SQL en `docker/mysql/init/` son **SOLO para inicialización del contenedor Docker**:
+- Se ejecutan una sola vez cuando creas el contenedor por primera vez
+- Útiles para: setup inicial, datos de prueba, usuario admin
+- **NO son migraciones** - No usar para cambios evolutivos de la BD
+- Si el contenedor ya existe, estos scripts NO se ejecutan
 
 ---
 

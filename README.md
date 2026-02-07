@@ -1203,7 +1203,70 @@ if (typeof filters.isActive === 'boolean') {
 
 ---
 
-### 📦 **6. Modificar Entidad Existente**
+### �️ **6. CRÍTICO: Migraciones de Base de Datos**
+
+**REGLA FUNDAMENTAL: SIEMPRE usa TypeORM Migrations**
+
+#### ❌ **NO HACER:**
+
+**NUNCA crear scripts SQL manuales en `docker/mysql/init/` para migraciones:**
+
+```bash
+# ❌ INCORRECTO - NO CREAR MÁS ARCHIVOS AQUÍ
+docker/mysql/init/02_move_profile_fields.sql  # MAL ❌
+docker/mysql/init/03_add_new_table.sql        # MAL ❌
+```
+
+**⚠️ Scripts en `docker/mysql/init/` son SOLO para inicialización del contenedor:**
+- Se ejecutan una vez al crear el contenedor
+- No hay tracking de ejecuciones
+- No reversibles
+- No funcionan en contenedores existentes
+
+#### ✅ **HACER:**
+
+**Usar SIEMPRE TypeORM Migrations:**
+
+```bash
+# 1. Modificar entidad en src/entities/
+# 2. Generar migración automáticamente
+npm run migration:generate src/database/migrations/DescripcionDelCambio
+
+# 3. Revisar migración generada
+cat src/database/migrations/[timestamp]-DescripcionDelCambio.ts
+
+# 4. Ejecutar migración
+npm run migration:run
+
+# 5. Verificar estado
+npm run migration:show
+```
+
+**Ventajas:**
+- ✅ Tracking automático de qué se ejecutó
+- ✅ Reversibles (`migration:revert`)
+- ✅ Versionadas con el código
+- ✅ Funcionan en producción
+- ✅ Sincronizadas con entidades TypeScript
+
+**Comandos disponibles:**
+```bash
+npm run migration:create src/database/migrations/Nombre  # Crear vacía
+npm run migration:generate src/database/migrations/Nombre # Generar automática
+npm run migration:run      # Ejecutar pendientes
+npm run migration:revert   # Revertir última
+npm run migration:show     # Ver estado
+```
+
+**Referencias:**
+- [AGENTS.md](AGENTS.md) - Sección "Sistema de Migraciones de Base de Datos"
+- [DEVELOPMENT-NOTES.md](DEVELOPMENT-NOTES.md) - Recordatorio crítico #1
+- [data-source.ts](src/database/data-source.ts) - Configuración
+- [TypeORM Migrations](https://typeorm.io/migrations) - Documentación oficial
+
+---
+
+### 📦 **7. Modificar Entidad Existente**
 
 **Proceso:**
 
@@ -1226,7 +1289,7 @@ npm run migration:show
 - ⚠️ Crear nueva versión de API (v2)
 - ⚠️ Seguir guía: PASO-A-PASO-Crear-Nueva-Version-API.md
 
-### 📋 **7. Actualizar CHANGELOG.md**
+### 📋 **8. Actualizar CHANGELOG.md**
 
 **OBLIGATORIO después de cada cambio significativo:**
 

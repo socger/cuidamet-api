@@ -1,6 +1,68 @@
 # 📝 Development Notes - Recordatorios Importantes
 
-## 🔴 CRÍTICO: Filtros Booleanos en Query Parameters
+## 🔴 CRÍTICO #1: Sistema de Migraciones de Base de Datos
+
+**REGLA FUNDAMENTAL: SIEMPRE usa TypeORM Migrations para cambios en la base de datos.**
+
+### ❌ NO HACER
+
+**NUNCA crear scripts SQL manuales en `docker/mysql/init/` para migraciones:**
+
+```bash
+# ❌ INCORRECTO - NO CREAR MÁS ARCHIVOS AQUÍ PARA MIGRACIONES
+docker/mysql/init/02_move_profile_fields.sql  # MAL ❌
+docker/mysql/init/03_add_new_table.sql        # MAL ❌
+```
+
+### ✅ HACER
+
+**SIEMPRE usa TypeORM Migrations:**
+
+```bash
+# 1. Modificar entidad en src/entities/
+# 2. Generar migración automáticamente
+npm run migration:generate src/database/migrations/DescripcionDelCambio
+
+# 3. Ejecutar migración
+npm run migration:run
+
+# 4. Ver estado
+npm run migration:show
+```
+
+### Por qué TypeORM Migrations
+
+✅ **Ventajas:**
+- Tracking automático de qué se ejecutó
+- Reversibles con `migration:revert`
+- Versionadas con el código
+- Funcionan en producción
+- Sincronizadas con entidades TypeScript
+
+❌ **Problemas de scripts SQL manuales:**
+- Solo se ejecutan al crear contenedor
+- No reversibles
+- Sin tracking
+- No funcionan en BD existentes
+
+### Comandos Rápidos
+
+| Comando | Descripción |
+|---------|-------------|
+| `npm run migration:create src/database/migrations/Nombre` | Crear migración vacía |
+| `npm run migration:generate src/database/migrations/Nombre` | Generar desde entidades |
+| `npm run migration:run` | Ejecutar pendientes |
+| `npm run migration:revert` | Revertir última |
+| `npm run migration:show` | Ver estado |
+
+### Referencias
+- [AGENTS.md](AGENTS.md) - Sección "Sistema de Migraciones de Base de Datos"
+- [data-source.ts](src/database/data-source.ts) - Configuración de TypeORM
+- [TypeORM Migrations](https://typeorm.io/migrations) - Documentación oficial
+
+---
+
+## 🔴 CRÍTICO #2: Filtros Booleanos en Query Parameters
 
 **Este es el problema más común cuando se crean nuevos DTOs de filtros.**
 
