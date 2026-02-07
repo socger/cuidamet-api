@@ -37,6 +37,10 @@ export interface AuthResponse {
     email: string;
     firstName?: string;
     lastName?: string;
+    phone?: string;
+    photoUrl?: string;
+    location?: string;
+    languages?: string[];
     roles: any[];
   };
 }
@@ -148,6 +152,10 @@ export class AuthService {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          phone: user.phone,
+          photoUrl: user.photoUrl,
+          location: user.location,
+          languages: user.languages,
           roles: roleNames, // Array de strings con nombres de roles
         },
       };
@@ -246,6 +254,10 @@ export class AuthService {
         email: userWithRoles.email,
         firstName: userWithRoles.firstName,
         lastName: userWithRoles.lastName,
+        phone: userWithRoles.phone,
+        photoUrl: userWithRoles.photoUrl,
+        location: userWithRoles.location,
+        languages: userWithRoles.languages,
         roles: userWithRoles.roles,
       },
     };
